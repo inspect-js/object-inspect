@@ -25,8 +25,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
     }
-    else if (typeof HTMLElement !== 'undefined' && obj instanceof HTMLElement) {
-        var s = '<' + String(obj.tagName).toLowerCase();
+    else if (isElement(obj)) {
+        var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
         for (var i = 0; i < attrs.length; i++) {
             s += ' ' + attrs[i].name + '="' + quote(attrs[i].value) + '"';
@@ -90,4 +90,14 @@ function indexOf (xs, x) {
         if (xs[i] === x) return i;
     }
     return -1;
+}
+
+function isElement (x) {
+    if (!x || typeof x !== 'object') return false;
+    if (typeof HTMLElement !== 'undefined') {
+        return x instanceof HTMLElement;
+    }
+    else return typeof x.nodeName === 'string'
+        && typeof x.getAttribute === 'function'
+    ;
 }
