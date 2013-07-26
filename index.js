@@ -22,7 +22,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return "'" + obj.replace(/(['\\])/g, '\\$1') + "'";
     }
     else if (typeof obj === 'function') {
-        return '[Function' + (obj.name ? ': ' + obj.name : '') + ']';
+        var name = nameOf(obj);
+        return '[Function' + (name ? ': ' + name : '') + ']';
     }
     else if (typeof HTMLElement !== 'undefined' && obj instanceof HTMLElement) {
         var s = '<' + String(obj.tagName).toLowerCase();
@@ -75,4 +76,10 @@ function isRegExp (obj) {
 function has (obj, key) {
     if (!{}.hasOwnProperty) return true;
     return {}.hasOwnProperty.call(obj, key);
+}
+
+function nameOf (f) {
+    if (f.name) return f.name;
+    var m = f.toString().match(/^function\s*([\w$]+)/);
+    if (m) return m[1];
 }
