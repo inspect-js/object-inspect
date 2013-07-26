@@ -45,12 +45,11 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     else if (typeof obj === 'object' && !isDate(obj) && !isRegExp(obj)) {
         var xs = [];
         for (var key in obj) {
-            if ({}.hasOwnProperty.call(obj, key)) {
-                if (/[^\w$]/.test(key)) {
-                    xs.push(inspect(key) + ': ' + inspect(obj[key], obj));
-                }
-                else xs.push(key + ': ' + inspect(obj[key], obj));
+            if (!has(obj, key)) continue;
+            if (/[^\w$]/.test(key)) {
+                xs.push(inspect(key) + ': ' + inspect(obj[key], obj));
             }
+            else xs.push(key + ': ' + inspect(obj[key], obj));
         }
         return '{ ' + xs.join(', ') + ' }';
     }
@@ -71,4 +70,9 @@ function isDate (obj) {
 
 function isRegExp (obj) {
     return {}.toString.call(obj) === '[object RegExp]';
+}
+
+function has (obj, key) {
+    if (!{}.hasOwnProperty) return true;
+    return {}.hasOwnProperty.call(obj, key);
 }
