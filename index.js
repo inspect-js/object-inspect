@@ -1,12 +1,21 @@
-module.exports = function inspect_ (obj, opts, depth) {
+module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
-    var maxDepth = opts.depth || 5;
     
+    var maxDepth = opts.depth || 5;
     if (depth === undefined) depth = 0;
     if (depth > maxDepth) return '...';
     
-    function inspect (value) {
-        return inspect_(value, opts, depth + 1);
+    if (seen === undefined) seen = [];
+    else if (seen.indexOf(obj) >= 0) {
+        return '[Circular]';
+    }
+    
+    function inspect (value, from) {
+        if (from) {
+            seen = seen.slice();
+            seen.push(from);
+        }
+        return inspect_(value, opts, depth + 1, seen);
     }
     
     if (typeof obj === 'string') {
@@ -26,7 +35,7 @@ module.exports = function inspect_ (obj, opts, depth) {
     else if (isArray(obj)) {
         var xs = Array(obj.length);
         for (var i = 0; i < obj.length; i++) {
-            xs[i] = inspect(obj[i]);
+            xs[i] = inspect(obj[i], obj);
         }
         return '[ ' + xs.join(', ') + ' ]';
     }
@@ -35,9 +44,9 @@ module.exports = function inspect_ (obj, opts, depth) {
         for (var key in obj) {
             if ({}.hasOwnProperty.call(obj, key)) {
                 if (/[^\w$]/.test(key)) {
-                    xs.push(inspect(key) + ': ' + inspect(obj[key]));
+                    xs.push(inspect(key) + ': ' + inspect(obj[key], obj));
                 }
-                else xs.push(key + ': ' + inspect(obj[key]));
+                else xs.push(key + ': ' + inspect(obj[key], obj));
             }
         }
         return '{ ' + xs.join(', ') + ' }';
