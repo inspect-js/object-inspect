@@ -1,6 +1,6 @@
 # object-inspect
 
-inspect objects in node and in the browser
+string representations of objects in node and the browser
 
 # example
 
