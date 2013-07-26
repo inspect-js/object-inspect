@@ -21,6 +21,9 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     if (typeof obj === 'string') {
         return "'" + obj.replace(/(['\\])/g, '\\$1') + "'";
     }
+    else if (typeof obj === 'function') {
+        return '[Function' + (obj.name ? ': ' + obj.name : '') + ']';
+    }
     else if (typeof HTMLElement !== 'undefined' && obj instanceof HTMLElement) {
         var s = '<' + String(obj.tagName).toLowerCase();
         var attrs = obj.attributes || [];
