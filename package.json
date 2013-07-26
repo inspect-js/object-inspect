@@ -1,0 +1,24 @@
+{
+  "name": "object-inspect",
+  "version": "0.0.0",
+  "description": "string representations of objects in node and the browser",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/substack/object-inspect.git"
+  },
+  "homepage": "https://github.com/substack/object-inspect",
+  "keywords": [
+    "inspect",
+    "util.inspect",
+    "object",
+    "stringify",
+    "pretty"
+  ],
+  "author": {
+    "name": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net"
+  },
+  "license": "MIT"
+}
