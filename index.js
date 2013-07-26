@@ -6,7 +6,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     if (depth > maxDepth && maxDepth > 0) return '...';
     
     if (seen === undefined) seen = [];
-    else if (seen.indexOf(obj) >= 0) {
+    else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
     
@@ -82,4 +82,12 @@ function nameOf (f) {
     if (f.name) return f.name;
     var m = f.toString().match(/^function\s*([\w$]+)/);
     if (m) return m[1];
+}
+
+function indexOf (xs, x) {
+    if (xs.indexOf) return xs.indexOf(x);
+    for (var i = 0, l = xs.length; i < l; i++) {
+        if (xs[i] === x) return i;
+    }
+    return -1;
 }
