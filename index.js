@@ -1,9 +1,9 @@
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
     
-    var maxDepth = opts.depth || 5;
+    var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
-    if (depth > maxDepth) return '...';
+    if (depth > maxDepth && maxDepth > 0) return '...';
     
     if (seen === undefined) seen = [];
     else if (seen.indexOf(obj) >= 0) {

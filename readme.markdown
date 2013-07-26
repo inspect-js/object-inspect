@@ -4,7 +4,16 @@ inspect objects in node and in the browser
 
 # example
 
-## browser
+## circular
+
+``` js
+var inspect = require('object-inspect');
+var obj = { a: 1, b: [3,4] };
+obj.c = obj;
+console.log(inspect(obj));
+```
+
+## dom element
 
 ``` js
 var inspect = require('object-inspect');
@@ -22,4 +31,25 @@ output:
 [ <div id="beep">...</div>, { a: 3, b: 4, c: [ 5, 6, [ 7, [ 8, [ ... ] ] ] ] } ]
 ```
 
-## node
+# methods
+
+``` js
+var inspect = require('object-inspect')
+```
+
+## var s = inspect(obj, opts={})
+
+Return a string `s` with the string representation of `obj` up to a depth of
+`opts.depth`.
+
+# install
+
+With [npm](https://npmjs.org) do:
+
+```
+npm install object-inspect
+```
+
+# license
+
+MIT
