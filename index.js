@@ -25,6 +25,9 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
     }
+    else if (obj === null) {
+        return 'null';
+    }
     else if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
