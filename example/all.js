@@ -5,7 +5,8 @@ var obj = {
     c: undefined,
     d: null,
     e: /^x/i,
-    buf: new Buffer('abc')
+    buf: new Buffer('abc'),
+    now: new Date
 };
 obj.self = obj;
 console.log(inspect(obj));
