@@ -40,6 +40,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return s;
     }
     else if (isArray(obj)) {
+        if (obj.length === 0) return '[]';
         var xs = Array(obj.length);
         for (var i = 0; i < obj.length; i++) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
@@ -58,6 +59,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
             }
             else xs.push(key + ': ' + inspect(obj[key], obj));
         }
+        if (xs.length === 0) return '{}';
         return '{ ' + xs.join(', ') + ' }';
     }
     else return String(obj);
