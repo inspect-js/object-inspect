@@ -42,7 +42,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     else if (isArray(obj)) {
         var xs = Array(obj.length);
         for (var i = 0; i < obj.length; i++) {
-            xs[i] = inspect(obj[i], obj);
+            xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
         return '[ ' + xs.join(', ') + ' ]';
     }
@@ -80,7 +80,7 @@ function isRegExp (obj) {
 }
 
 function has (obj, key) {
-    if (!{}.hasOwnProperty) return true;
+    if (!{}.hasOwnProperty) return key in obj;
     return {}.hasOwnProperty.call(obj, key);
 }
 
