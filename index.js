@@ -51,9 +51,13 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return obj.inspect();
     }
     else if (typeof obj === 'object' && !isDate(obj) && !isRegExp(obj)) {
-        var xs = [];
+        var xs = [], keys = [];
         for (var key in obj) {
-            if (!has(obj, key)) continue;
+            if (has(obj, key)) keys.push(key);
+        }
+        keys.sort();
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
             if (/[^\w$]/.test(key)) {
                 xs.push(inspect(key) + ': ' + inspect(obj[key], obj));
             }
