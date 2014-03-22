@@ -19,7 +19,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     }
     
     if (typeof obj === 'string') {
-        return "'" + obj.replace(/(['\\])/g, '\\$1') + "'";
+        return inspectString(obj);
     }
     else if (typeof obj === 'function') {
         var name = nameOf(obj);
@@ -112,4 +112,16 @@ function isElement (x) {
     else return typeof x.nodeName === 'string'
         && typeof x.getAttribute === 'function'
     ;
+}
+
+function inspectString (str) {
+    var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
+    return "'" + s + "'";
+    
+    function lowbyte (c) {
+        var n = c.charCodeAt(0);
+        var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];
+        if (x) return '\\' + x;
+        return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
+    }
 }
