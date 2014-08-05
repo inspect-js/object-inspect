@@ -3,7 +3,10 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
-    if (depth >= maxDepth && maxDepth > 0) return '[Object]';
+    if (depth >= maxDepth && maxDepth > 0
+    && obj && typeof obj === 'object') {
+        return '[Object]';
+    }
     
     if (seen === undefined) seen = [];
     else if (indexOf(seen, obj) >= 0) {
@@ -118,10 +121,10 @@ function indexOf (xs, x) {
 
 function isElement (x) {
     if (!x || typeof x !== 'object') return false;
-    if (typeof HTMLElement !== 'undefined') {
-        return x instanceof HTMLElement;
+    if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
+        return true;
     }
-    else return typeof x.nodeName === 'string'
+    return typeof x.nodeName === 'string'
         && typeof x.getAttribute === 'function'
     ;
 }
