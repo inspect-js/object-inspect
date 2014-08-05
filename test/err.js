@@ -10,15 +10,20 @@ test('type error', function (t) {
     var berr = new TypeError('tuv');
     berr.baz = 555;
     
+    var cerr = new SyntaxError;
+    cerr.message = 'whoa';
+    cerr['a-b'] = 5;
+    
     var obj = [
         new TypeError,
         new TypeError('xxx'),
-        aerr, berr
+        aerr, berr, cerr
     ];
     t.equal(inspect(obj), '[ ' + [
         '[TypeError]',
         '[TypeError: xxx]',
         '{ [TypeError] foo: 555, bar: [ 1, 2, 3 ] }',
         '{ [TypeError: tuv] baz: 555 }',
+        '{ [SyntaxError: whoa] message: \'whoa\', \'a-b\': 5 }'
     ].join(', ') + ' ]');
 });
