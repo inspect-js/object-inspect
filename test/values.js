@@ -14,3 +14,30 @@ test('has', function (t) {
     t.equal(inspect({ a: 1, b: 2 }), '{ a: 1, b: 2 }');
     Object.prototype.hasOwnProperty = has;
 });
+
+test('indexOf seen', function (t) {
+    t.plan(1);
+    var xs = [ 1, 2, 3, {} ];
+    xs.push(xs);
+    
+    var seen = [];
+    seen.indexOf = undefined;
+    
+    t.equal(
+        inspect(xs, {}, 0, seen),
+        '[ 1, 2, 3, {}, [Circular] ]'
+    );
+});
+
+test('seen seen', function (t) {
+    t.plan(1);
+    var xs = [ 1, 2, 3 ];
+    
+    var seen = [ xs ];
+    seen.indexOf = undefined;
+    
+    t.equal(
+        inspect(xs, {}, 0, seen),
+        '[Circular]'
+    );
+});
