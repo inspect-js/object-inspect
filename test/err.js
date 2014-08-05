@@ -15,10 +15,10 @@ test('type error', function (t) {
         new TypeError('xxx'),
         aerr, berr
     ];
-    t.equal(inspect(obj), '[' + [
+    t.equal(inspect(obj), '[ ' + [
         '[TypeError]',
         '[TypeError: xxx]',
-        '{ [TypeError: xxx] foo: 555, bar: [ 1, 2, 3 ] }',
+        '{ [TypeError] foo: 555, bar: [ 1, 2, 3 ] }',
         '{ [TypeError: tuv] baz: 555 }',
-    ].join(', ') + ']');
+    ].join(', ') + ' ]');
 });

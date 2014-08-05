@@ -47,6 +47,21 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         return '[ ' + xs.join(', ') + ' ]';
     }
+    else if (isError(obj)) {
+        var parts = [];
+        for (var key in obj) {
+            if (!has(obj, key)) continue;
+            
+            if (/[^\w$]/.test(key)) {
+                parts.push(inspect(key) + ': ' + inspect(obj[key]));
+            }
+            else {
+                parts.push(key + ': ' + inspect(obj[key]));
+            }
+        }
+        if (parts.length === 0) return '[' + obj + ']';
+        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
+    }
     else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
     }
@@ -73,21 +88,18 @@ function quote (s) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-function isArray (obj) {
-    return {}.toString.call(obj) === '[object Array]';
-}
-
-function isDate (obj) {
-    return {}.toString.call(obj) === '[object Date]';
-}
-
-function isRegExp (obj) {
-    return {}.toString.call(obj) === '[object RegExp]';
-}
+function isArray (obj) { return toStr(obj) === '[object Array]' }
+function isDate (obj) { return toStr(obj) === '[object Date]' }
+function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
+function isError (obj) { return toStr(obj) === '[object Error]' }
 
 function has (obj, key) {
     if (!{}.hasOwnProperty) return key in obj;
     return {}.hasOwnProperty.call(obj, key);
+}
+
+function toStr (obj) {
+    return Object.prototype.toString.call(obj);
 }
 
 function nameOf (f) {
