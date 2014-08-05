@@ -36,7 +36,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         s += '>';
         if (obj.childNodes && obj.childNodes.length) s += '...';
-        s += '</' + String(obj.tagName).toLowerCase() + '>';
+        s += '</' + String(obj.nodeName).toLowerCase() + '>';
         return s;
     }
     else if (isArray(obj)) {
