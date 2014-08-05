@@ -1,10 +1,10 @@
 {
   "name": "object-inspect",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "tape": "~2.6.0"
+    "tape": "^2.13.3"
   },
   "scripts": {
     "test": "tape test/*.js"
