@@ -41,3 +41,16 @@ test('seen seen', function (t) {
         '[Circular]'
     );
 });
+
+test('seen seen seen', function (t) {
+    t.plan(1);
+    var xs = [ 1, 2, 3 ];
+    
+    var seen = [ 5, xs ];
+    seen.indexOf = undefined;
+    
+    t.equal(
+        inspect(xs, {}, 0, seen),
+        '[Circular]'
+    );
+});
