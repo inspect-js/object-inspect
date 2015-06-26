@@ -54,3 +54,10 @@ test('seen seen seen', function (t) {
         '[Circular]'
     );
 });
+
+test('symbols', { skip: typeof Symbol !== 'function' }, function (t) {
+	var sym = Symbol('foo');
+	t.equal(inspect(sym), 'Symbol(foo)', 'Symbol("foo") should be "Symbol(foo)"');
+	t.equal(inspect(Object(sym)), 'Object(Symbol(foo))', 'Object(Symbol("foo")) should be "Object(Symbol(foo))"');
+	t.end();
+});

@@ -31,6 +31,10 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     else if (obj === null) {
         return 'null';
     }
+    else if (isSymbol(obj)) {
+        var symString = Symbol.prototype.toString.call(obj);
+        return typeof obj === 'object' ? 'Object(' + symString + ')' : symString;
+    }
     else if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
@@ -95,6 +99,7 @@ function isArray (obj) { return toStr(obj) === '[object Array]' }
 function isDate (obj) { return toStr(obj) === '[object Date]' }
 function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
 function isError (obj) { return toStr(obj) === '[object Error]' }
+function isSymbol (obj) { return toStr(obj) === '[object Symbol]' }
 
 function has (obj, key) {
     if (!{}.hasOwnProperty) return key in obj;
