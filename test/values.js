@@ -11,8 +11,9 @@ test('has', function (t) {
     t.plan(1);
     var has = Object.prototype.hasOwnProperty;
     delete Object.prototype.hasOwnProperty;
-    t.equal(inspect({ a: 1, b: 2 }), '{ a: 1, b: 2 }');
+    var result = inspect({ a: 1, b: 2 });
     Object.prototype.hasOwnProperty = has;
+    t.equal(result, '{ a: 1, b: 2 }');
 });
 
 test('indexOf seen', function (t) {
