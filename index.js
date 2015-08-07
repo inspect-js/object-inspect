@@ -101,9 +101,9 @@ function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
 function isError (obj) { return toStr(obj) === '[object Error]' }
 function isSymbol (obj) { return toStr(obj) === '[object Symbol]' }
 
+var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
 function has (obj, key) {
-    if (!{}.hasOwnProperty) return key in obj;
-    return {}.hasOwnProperty.call(obj, key);
+    return hasOwn.call(obj, key);
 }
 
 function toStr (obj) {
