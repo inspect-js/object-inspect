@@ -4,7 +4,7 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "tape": "^2.14.0"
+    "tape": "^4.0.3"
   },
   "scripts": {
     "test": "tape test/*.js"
