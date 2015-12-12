@@ -4,13 +4,16 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "tape": "^4.0.3"
+    "tape": "^4.2.2"
   },
   "scripts": {
     "test": "tape test/*.js"
   },
   "testling": {
-    "files": [ "test/*.js", "test/browser/*.js" ],
+    "files": [
+      "test/*.js",
+      "test/browser/*.js"
+    ],
     "browsers": [
       "ie/6..latest",
       "chrome/latest",
