@@ -56,8 +56,39 @@ test('seen seen seen', function (t) {
 });
 
 test('symbols', { skip: typeof Symbol !== 'function' }, function (t) {
-	var sym = Symbol('foo');
-	t.equal(inspect(sym), 'Symbol(foo)', 'Symbol("foo") should be "Symbol(foo)"');
-	t.equal(inspect(Object(sym)), 'Object(Symbol(foo))', 'Object(Symbol("foo")) should be "Object(Symbol(foo))"');
-	t.end();
+    var sym = Symbol('foo');
+    t.equal(inspect(sym), 'Symbol(foo)', 'Symbol("foo") should be "Symbol(foo)"');
+    t.equal(inspect(Object(sym)), 'Object(Symbol(foo))', 'Object(Symbol("foo")) should be "Object(Symbol(foo))"');
+    t.end();
+});
+
+test('Map', { skip: typeof Map !== 'function' }, function (t) {
+    var map = new Map();
+    map.set({ a: 1 }, ['b']);
+    map.set(3, NaN);
+    var expectedString = 'Map (2) {' + inspect({ a: 1 }) + ' => ' + inspect(['b']) + ', 3 => NaN}';
+    t.equal(inspect(map), expectedString, 'new Map([[{ a: 1 }, ["b"]], [3, NaN]]) should show size and contents');
+    t.equal(inspect(new Map()), 'Map (0) {}', 'empty Map should show as empty');
+
+    var nestedMap = new Map();
+    nestedMap.set(nestedMap, map);
+    t.equal(inspect(nestedMap), 'Map (1) {[Circular] => ' + expectedString + '}', 'Map containing a Map should work');
+
+    t.end();
+});
+
+test('Set', { skip: typeof Set !== 'function' }, function (t) {
+    var set = new Set();
+    set.add({ a: 1 });
+    set.add(['b']);
+    var expectedString = 'Set (2) {' + inspect({ a: 1 }) + ', ' + inspect(['b']) + '}';
+    t.equal(inspect(set), expectedString, 'new Set([{ a: 1 }, ["b"]]) should show size and contents');
+    t.equal(inspect(new Set()), 'Set (0) {}', 'empty Set should show as empty');
+
+    var nestedSet = new Set();
+    nestedSet.add(set);
+    nestedSet.add(nestedSet);
+    t.equal(inspect(nestedSet), 'Set (2) {' + expectedString + ', [Circular]}', 'Set containing a Set should work');
+
+    t.end();
 });
