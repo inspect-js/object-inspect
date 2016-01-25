@@ -4,10 +4,13 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
+    "browserify": "^13.0.0",
     "tape": "^4.2.2"
   },
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "tape test/*.js",
+    "build-umd": "browserify index.js -o object-inspect.js --standalone inspect",
+    "release": "npm run build-umd && npm publish"
   },
   "testling": {
     "files": [
