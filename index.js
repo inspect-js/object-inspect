@@ -12,8 +12,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
-    if (depth >= maxDepth && maxDepth > 0
-    && obj && typeof obj === 'object') {
+    if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
         return '[Object]';
     }
     
@@ -95,7 +94,19 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         });
         return 'Set (' + setSize.call(obj) + ') {' + parts.join(', ') + '}';
     }
-    else if (typeof obj === 'object' && !isDate(obj) && !isRegExp(obj)) {
+    else if (typeof obj !== 'object') {
+        return String(obj);
+    }
+    else if (isNumber(obj)) {
+        return 'Object(' + Number(obj) + ')';
+    }
+    else if (isBoolean(obj)) {
+        return 'Object(' + !!obj + ')';
+    }
+    else if (isString(obj)) {
+        return 'Object(' + inspect(String(obj)) + ')';
+    }
+    else if (!isDate(obj) && !isRegExp(obj)) {
         var xs = [], keys = [];
         for (var key in obj) {
             if (has(obj, key)) keys.push(key);
@@ -123,6 +134,9 @@ function isDate (obj) { return toStr(obj) === '[object Date]' }
 function isRegExp (obj) { return toStr(obj) === '[object RegExp]' }
 function isError (obj) { return toStr(obj) === '[object Error]' }
 function isSymbol (obj) { return toStr(obj) === '[object Symbol]' }
+function isString (obj) { return toStr(obj) === '[object String]' }
+function isNumber (obj) { return toStr(obj) === '[object Number]' }
+function isBoolean (obj) { return toStr(obj) === '[object Boolean]' }
 
 var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
 function has (obj, key) {

@@ -92,3 +92,30 @@ test('Set', { skip: typeof Set !== 'function' }, function (t) {
 
     t.end();
 });
+
+test('Strings', function (t) {
+    var str = 'abc';
+
+    t.equal(inspect(str), "'" + str + "'", 'primitive string shows as such');
+    t.equal(inspect(Object(str)), 'Object(' + inspect(str) + ')', 'String object shows as such');
+
+    t.end();
+});
+
+test('Numbers', function (t) {
+    var num = 42;
+
+    t.equal(inspect(num), String(num), 'primitive number shows as such');
+    t.equal(inspect(Object(num)), 'Object(' + inspect(num) + ')', 'Number object shows as such');
+
+    t.end();
+});
+
+test('Booleans', function (t) {
+    var bool = true;
+
+    t.equal(inspect(bool), String(bool), 'primitive boolean shows as such');
+    t.equal(inspect(Object(bool)), 'Object(' + inspect(bool) + ')', 'Boolean object shows as such');
+
+    t.end();
+});
