@@ -112,10 +112,11 @@ test('Numbers', function (t) {
 });
 
 test('Booleans', function (t) {
-    var bool = true;
+    t.equal(inspect(true), String(true), 'primitive true shows as such');
+    t.equal(inspect(Object(true)), 'Object(' + inspect(true) + ')', 'Boolean object true shows as such');
 
-    t.equal(inspect(bool), String(bool), 'primitive boolean shows as such');
-    t.equal(inspect(Object(bool)), 'Object(' + inspect(bool) + ')', 'Boolean object shows as such');
+    t.equal(inspect(false), String(false), 'primitive false shows as such');
+    t.equal(inspect(Object(false)), 'Object(' + inspect(false) + ')', 'Boolean false object shows as such');
 
     t.end();
 });

@@ -6,6 +6,7 @@ var hasSet = typeof Set === 'function' && Set.prototype;
 var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
 var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 var setForEach = hasSet && Set.prototype.forEach;
+var booleanValueOf = Boolean.prototype.valueOf;
 
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
@@ -101,7 +102,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return 'Object(' + Number(obj) + ')';
     }
     else if (isBoolean(obj)) {
-        return 'Object(' + !!obj + ')';
+        return 'Object(' + booleanValueOf.call(obj) + ')';
     }
     else if (isString(obj)) {
         return 'Object(' + inspect(String(obj)) + ')';
