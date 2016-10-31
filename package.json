@@ -7,7 +7,8 @@
     "tape": "^4.5.1"
   },
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "npm run tests-only",
+    "tests-only": "tape test/*.js"
   },
   "testling": {
     "files": [
