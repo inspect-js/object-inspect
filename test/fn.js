@@ -9,7 +9,9 @@ test('function', function (t) {
 
 test('function name', function (t) {
     t.plan(1);
-    var f = function () {};
+    var f = (function () {
+      return function () {};
+    }());
     f.toString = function () { return 'function xxx () {}' };
     var obj = [ 1, 2, f, 4 ];
     t.equal(inspect(obj), '[ 1, 2, [Function: xxx], 4 ]');

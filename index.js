@@ -150,7 +150,7 @@ function toStr (obj) {
 
 function nameOf (f) {
     if (f.name) return f.name;
-    var m = f.toString().match(/^function\s*([\w$]+)/);
+    var m = String(f).match(/^function\s*([\w$]+)/);
     if (m) return m[1];
 }
 
