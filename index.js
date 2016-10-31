@@ -33,6 +33,12 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     if (typeof obj === 'string') {
         return inspectString(obj);
     }
+    if (typeof obj === 'number') {
+      if (obj === 0) {
+        return Infinity / obj > 0 ? '0' : '-0';
+      }
+      return String(obj);
+    }
     else if (typeof obj === 'function') {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
