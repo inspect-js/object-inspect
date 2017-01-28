@@ -10,11 +10,30 @@ var booleanValueOf = Boolean.prototype.valueOf;
 var objectToString = Object.prototype.toString;
 
 module.exports = function inspect_ (obj, opts, depth, seen) {
+    if (typeof obj === 'undefined') {
+        return 'undefined';
+    }
+    if (obj === null) {
+        return 'null';
+    }
+    if (typeof obj === 'boolean') {
+        return obj ? 'true' : 'false';
+    }
+    if (typeof obj === 'string') {
+        return inspectString(obj);
+    }
+    if (typeof obj === 'number') {
+      if (obj === 0) {
+        return Infinity / obj > 0 ? '0' : '-0';
+      }
+      return String(obj);
+    }
+
     if (!opts) opts = {};
 
     var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
     if (typeof depth === 'undefined') depth = 0;
-    if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
+    if (depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
         return '[Object]';
     }
 
@@ -30,22 +49,10 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         return inspect_(value, opts, depth + 1, seen);
     }
-    
-    if (typeof obj === 'string') {
-        return inspectString(obj);
-    }
-    if (typeof obj === 'number') {
-      if (obj === 0) {
-        return Infinity / obj > 0 ? '0' : '-0';
-      }
-      return String(obj);
-    }
+
     if (typeof obj === 'function') {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
-    }
-    if (obj === null) {
-        return 'null';
     }
     if (isSymbol(obj)) {
         var symString = Symbol.prototype.toString.call(obj);
@@ -101,9 +108,6 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
             parts.push(inspect(value, obj));
         });
         return collectionOf('Set', setSize.call(obj), parts);
-    }
-    if (typeof obj !== 'object') {
-        return String(obj);
     }
     if (isNumber(obj)) {
         return markBoxed(Number(obj));
