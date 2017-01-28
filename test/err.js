@@ -1,4 +1,5 @@
 var inspect = require('../');
+var assert = require('assert');
 var test = require('tape');
 
 test('type error', function (t) {
@@ -26,4 +27,17 @@ test('type error', function (t) {
         '{ [TypeError: tuv] baz: 555 }',
         '{ [SyntaxError: whoa] message: \'whoa\', \'a-b\': 5 }'
     ].join(', ') + ' ]');
+});
+
+test('type AssertionError', function (t) {
+    t.plan(3);
+    var err = 'woot', obj2str = Object.prototype.toString;
+    try {
+      assert.deepStrictEqual(true, false);
+    } catch (assertNope) {
+      err = assertNope;
+    }
+    t.equal(err instanceof Error, true);
+    t.equal(obj2str.call(err),    '[object Object]');
+    t.equal(inspect(err),         '[' + String(err) + ']');
 });
