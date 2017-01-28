@@ -115,7 +115,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return markBoxed(inspect(String(obj)));
     }
     if (!isDate(obj) && !isRegExp(obj)) {
-        var xs = [], keys = [];
+        var xs = [];
+        var keys = [];
         for (var key in obj) {
             if (has(obj, key)) keys.push(key);
         }
