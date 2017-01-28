@@ -93,14 +93,14 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         mapForEach.call(obj, function (value, key) {
             parts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
         });
-        return 'Map (' + mapSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return collectionOf('Map', mapSize.call(obj), parts);
     }
     if (isSet(obj)) {
         var parts = [];
         setForEach.call(obj, function (value ) {
             parts.push(inspect(value, obj));
         });
-        return 'Set (' + setSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return collectionOf('Set', setSize.call(obj), parts);
     }
     if (typeof obj !== 'object') {
         return String(obj);
@@ -215,4 +215,8 @@ function inspectString (str) {
 
 function markBoxed (str) {
     return 'Object(' + str + ')';
+}
+
+function collectionOf(type, size, entries) {
+    return type + ' (' + size + ') {' + entries.join(', ') + '}';
 }
