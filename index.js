@@ -39,18 +39,18 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
       }
       return String(obj);
     }
-    else if (typeof obj === 'function') {
+    if (typeof obj === 'function') {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
     }
-    else if (obj === null) {
+    if (obj === null) {
         return 'null';
     }
-    else if (isSymbol(obj)) {
+    if (isSymbol(obj)) {
         var symString = Symbol.prototype.toString.call(obj);
         return typeof obj === 'object' ? 'Object(' + symString + ')' : symString;
     }
-    else if (isElement(obj)) {
+    if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
         for (var i = 0; i < attrs.length; i++) {
@@ -61,7 +61,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         s += '</' + String(obj.nodeName).toLowerCase() + '>';
         return s;
     }
-    else if (isArray(obj)) {
+    if (isArray(obj)) {
         if (obj.length === 0) return '[]';
         var xs = Array(obj.length);
         for (var i = 0; i < obj.length; i++) {
@@ -69,7 +69,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         return '[ ' + xs.join(', ') + ' ]';
     }
-    else if (isError(obj)) {
+    if (isError(obj)) {
         var parts = [];
         for (var key in obj) {
             if (!has(obj, key)) continue;
@@ -84,36 +84,36 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         if (parts.length === 0) return '[' + String(obj) + ']';
         return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
     }
-    else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
+    if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
     }
-    else if (isMap(obj)) {
+    if (isMap(obj)) {
         var parts = [];
         mapForEach.call(obj, function (value, key) {
             parts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
         });
         return 'Map (' + mapSize.call(obj) + ') {' + parts.join(', ') + '}';
     }
-    else if (isSet(obj)) {
+    if (isSet(obj)) {
         var parts = [];
         setForEach.call(obj, function (value ) {
             parts.push(inspect(value, obj));
         });
         return 'Set (' + setSize.call(obj) + ') {' + parts.join(', ') + '}';
     }
-    else if (typeof obj !== 'object') {
+    if (typeof obj !== 'object') {
         return String(obj);
     }
-    else if (isNumber(obj)) {
+    if (isNumber(obj)) {
         return 'Object(' + Number(obj) + ')';
     }
-    else if (isBoolean(obj)) {
+    if (isBoolean(obj)) {
         return 'Object(' + booleanValueOf.call(obj) + ')';
     }
-    else if (isString(obj)) {
+    if (isString(obj)) {
         return 'Object(' + inspect(String(obj)) + ')';
     }
-    else if (!isDate(obj) && !isRegExp(obj)) {
+    if (!isDate(obj) && !isRegExp(obj)) {
         var xs = [], keys = [];
         for (var key in obj) {
             if (has(obj, key)) keys.push(key);
@@ -129,7 +129,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         if (xs.length === 0) return '{}';
         return '{ ' + xs.join(', ') + ' }';
     }
-    else return String(obj);
+    return String(obj);
 };
 
 function quote (s) {
