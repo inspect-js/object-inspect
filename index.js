@@ -204,13 +204,13 @@ function isElement (x) {
 function inspectString (str) {
     var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
     return "'" + s + "'";
-    
-    function lowbyte (c) {
-        var n = c.charCodeAt(0);
-        var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];
-        if (x) return '\\' + x;
-        return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
-    }
+}
+
+function lowbyte (c) {
+    var n = c.charCodeAt(0);
+    var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];
+    if (x) return '\\' + x;
+    return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
 }
 
 function markBoxed (str) {
