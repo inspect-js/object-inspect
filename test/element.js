@@ -12,7 +12,7 @@ test('element', function (t) {
     var obj = [ 1, elem, 3 ];
     t.deepEqual(inspect(obj), '[ 1, <div class="row"></div>, 3 ]');
 });
-    
+
 test('element no attr', function (t) {
     t.plan(1);
     var elem = {
@@ -43,7 +43,7 @@ test('element instance', function (t) {
         this.attributes = attr;
     };
     global.HTMLElement.prototype.getAttribute = function () {};
-    
+
     var elem = new(global.HTMLElement)('div', []);
     var obj = [ 1, elem, 3 ];
     t.deepEqual(inspect(obj), '[ 1, <div></div>, 3 ]');

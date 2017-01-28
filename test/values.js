@@ -19,10 +19,10 @@ test('indexOf seen', function (t) {
     t.plan(1);
     var xs = [ 1, 2, 3, {} ];
     xs.push(xs);
-    
+
     var seen = [];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[ 1, 2, 3, {}, [Circular] ]'
@@ -32,10 +32,10 @@ test('indexOf seen', function (t) {
 test('seen seen', function (t) {
     t.plan(1);
     var xs = [ 1, 2, 3 ];
-    
+
     var seen = [ xs ];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[Circular]'
@@ -45,10 +45,10 @@ test('seen seen', function (t) {
 test('seen seen seen', function (t) {
     t.plan(1);
     var xs = [ 1, 2, 3 ];
-    
+
     var seen = [ 5, xs ];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[Circular]'

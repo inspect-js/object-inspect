@@ -10,18 +10,18 @@ var booleanValueOf = Boolean.prototype.valueOf;
 
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
-    
+
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
     if (depth === undefined) depth = 0;
     if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
         return '[Object]';
     }
-    
+
     if (seen === undefined) seen = [];
     else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
-    
+
     function inspect (value, from) {
         if (from) {
             seen = seen.slice();
@@ -29,7 +29,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         }
         return inspect_(value, opts, depth + 1, seen);
     }
-    
+
     if (typeof obj === 'string') {
         return inspectString(obj);
     }
@@ -67,7 +67,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         var parts = [];
         for (var key in obj) {
             if (!has(obj, key)) continue;
-            
+
             if (/[^\w$]/.test(key)) {
                 parts.push(inspect(key) + ': ' + inspect(obj[key]));
             }
@@ -197,7 +197,7 @@ function isElement (x) {
 function inspectString (str) {
     var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
     return "'" + s + "'";
-    
+
     function lowbyte (c) {
         var n = c.charCodeAt(0);
         var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];

@@ -6,14 +6,14 @@ test('type error', function (t) {
     var aerr = new TypeError;
     aerr.foo = 555;
     aerr.bar = [1,2,3];
-    
+
     var berr = new TypeError('tuv');
     berr.baz = 555;
-    
+
     var cerr = new SyntaxError;
     cerr.message = 'whoa';
     cerr['a-b'] = 5;
-    
+
     var obj = [
         new TypeError,
         new TypeError('xxx'),
