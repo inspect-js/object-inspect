@@ -11,14 +11,14 @@ var objectToString = Object.prototype.toString;
 
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
-    
-    var maxDepth = opts.depth === undefined ? 5 : opts.depth;
-    if (depth === undefined) depth = 0;
+
+    var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
+    if (typeof depth === 'undefined') depth = 0;
     if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
         return '[Object]';
     }
-    
-    if (seen === undefined) seen = [];
+
+    if (typeof seen === 'undefined') seen = [];
     else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
