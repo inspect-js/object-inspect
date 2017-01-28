@@ -116,10 +116,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     }
     if (!isDate(obj) && !isRegExp(obj)) {
         var xs = [];
-        var keys = [];
-        for (var key in obj) {
-            if (has(obj, key)) keys.push(key);
-        }
+        var keys = objectKeys(obj);
         keys.sort();
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
@@ -133,6 +130,14 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     }
     return String(obj);
 };
+
+function objectKeys(obj) {
+    var keys = [];
+    for (var key in obj) {
+        if (has(obj, key)) keys.push(key);
+    }
+    return keys;
+}
 
 function quote (s) {
     return String(s).replace(/"/g, '&quot;');
