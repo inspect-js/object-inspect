@@ -49,7 +49,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     }
     if (isSymbol(obj)) {
         var symString = Symbol.prototype.toString.call(obj);
-        return typeof obj === 'object' ? 'Object(' + symString + ')' : symString;
+        return typeof obj === 'object' ? markBoxed(symString) : symString;
     }
     if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
@@ -106,13 +106,13 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return String(obj);
     }
     if (isNumber(obj)) {
-        return 'Object(' + Number(obj) + ')';
+        return markBoxed(Number(obj));
     }
     if (isBoolean(obj)) {
-        return 'Object(' + booleanValueOf.call(obj) + ')';
+        return markBoxed(booleanValueOf.call(obj));
     }
     if (isString(obj)) {
-        return 'Object(' + inspect(String(obj)) + ')';
+        return markBoxed(inspect(String(obj)));
     }
     if (!isDate(obj) && !isRegExp(obj)) {
         var xs = [], keys = [];
@@ -211,4 +211,8 @@ function inspectString (str) {
         if (x) return '\\' + x;
         return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
     }
+}
+
+function markBoxed (str) {
+    return 'Object(' + str + ')';
 }
