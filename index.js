@@ -8,10 +8,53 @@ var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'f
 var setForEach = hasSet && Set.prototype.forEach;
 var booleanValueOf = Boolean.prototype.valueOf;
 
+function listFmtDefault(objType, size, parts, details) {
+  var parens = '{}', padType = ' ', padParts = ' ';
+  // size = null: The concept of size doesn't easily apply for this type.
+  // size = false: parts.length could be considered as the size but it's
+  //        customary to not display it for this type.
+
+  switch (objType || null) {
+  // We could save lots of cases and achieve more consistency in formating,
+  // but that would be a breaking change so let's defer that for the next
+  // breaking semver jump.
+  case null:
+    break;
+  case 'Array':
+    parens = '[]';
+    padType = objType = '';
+    break;
+  case 'Object':
+    padType = objType = '';
+    break;
+  case 'Error':
+    objType = '[' + details.obj + ']';  // NB: implicit String() conversion
+    if (!parts.length) {
+      parens = '';
+      padType = '';
+    }
+    break;
+  case 'Map':
+  case 'Set':
+    objType += ' (' + size + ') {';
+    size = null;
+    parens = [ '', '}' ];
+    padType = padParts = '';
+    break;
+  }
+  if (typeof size === 'number') { objType += ' (' + size + ')'; }
+  parts = parts.join(', ');
+  if (!parts) { padParts = ''; }
+  return (parens[0] || '') + padType + objType +
+    (padParts || padType) + parts + padParts +
+    (parens[1] || '');
+}
+
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (!opts) opts = {};
     
     var maxDepth = opts.depth === undefined ? 5 : opts.depth;
+    var listFmt = (opts.listFmt || listFmtDefault);
     if (depth === undefined) depth = 0;
     if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
         return '[Object]';
@@ -61,7 +104,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         for (var i = 0; i < obj.length; i++) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
-        return '[ ' + xs.join(', ') + ' ]';
+        return listFmt('Array', false, xs,
+          { depth: depth, opts: opts, obj: obj });
     }
     else if (isError(obj)) {
         var parts = [];
@@ -75,8 +119,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
                 parts.push(key + ': ' + inspect(obj[key]));
             }
         }
-        if (parts.length === 0) return '[' + obj + ']';
-        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
+        return listFmt('Error', null, parts,
+          { depth: depth, opts: opts, obj: obj });
     }
     else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
@@ -86,14 +130,16 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         mapForEach.call(obj, function (value, key) {
             parts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
         });
-        return 'Map (' + mapSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return listFmt('Map', mapSize.call(obj), parts,
+          { depth: depth, opts: opts, obj: obj });
     }
     else if (isSet(obj)) {
         var parts = [];
         setForEach.call(obj, function (value ) {
             parts.push(inspect(value, obj));
         });
-        return 'Set (' + setSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return listFmt('Set', setSize.call(obj), parts,
+          { depth: depth, opts: opts, obj: obj });
     }
     else if (typeof obj !== 'object') {
         return String(obj);
@@ -121,7 +167,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
             else xs.push(key + ': ' + inspect(obj[key], obj));
         }
         if (xs.length === 0) return '{}';
-        return '{ ' + xs.join(', ') + ' }';
+        return listFmt('Object', null, xs,
+          { depth: depth, opts: opts, obj: obj });
     }
     else return String(obj);
 };
