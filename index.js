@@ -75,8 +75,8 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
                 parts.push(key + ': ' + inspect(obj[key]));
             }
         }
-        if (parts.length === 0) return '[' + obj + ']';
-        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
+        if (parts.length === 0) return '[' + String(obj) + ']';
+        return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
     }
     else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
