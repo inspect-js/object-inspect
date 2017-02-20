@@ -38,6 +38,15 @@ module.exports = function inspect_(obj, options, depth, seen) {
         throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
     }
 
+    if (
+        has(opts, 'indent')
+        && opts.indent !== null
+        && opts.indent !== '\t'
+        && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)
+    ) {
+        throw new TypeError('options "indent" must be "\\t", an integer > 0, or `null`');
+    }
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -67,16 +76,27 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return isArray(obj) ? '[Array]' : '[Object]';
     }
 
+    var indent = getIndent(opts, depth);
+
     if (typeof seen === 'undefined') {
         seen = [];
     } else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
 
-    function inspect(value, from) {
+    function inspect(value, from, noIndent) {
         if (from) {
             seen = seen.slice();
             seen.push(from);
+        }
+        if (noIndent) {
+            var newOpts = {
+                depth: opts.depth
+            };
+            if (has(opts, 'quoteStyle')) {
+                newOpts.quoteStyle = opts.quoteStyle;
+            }
+            return inspect_(value, newOpts, depth + 1, seen);
         }
         return inspect_(value, opts, depth + 1, seen);
     }
@@ -102,7 +122,11 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
-        return '[ ' + arrObjKeys(obj, inspect).join(', ') + ' ]';
+        var xs = arrObjKeys(obj, inspect);
+        if (indent && !singleLineValues(xs)) {
+            return '[' + indentedJoin(xs, indent) + ']';
+        }
+        return '[ ' + xs.join(', ') + ' ]';
     }
     if (isError(obj)) {
         var parts = arrObjKeys(obj, inspect);
@@ -119,16 +143,16 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (isMap(obj)) {
         var mapParts = [];
         mapForEach.call(obj, function (value, key) {
-            mapParts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
+            mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
         });
-        return collectionOf('Map', mapSize.call(obj), mapParts);
+        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
     }
     if (isSet(obj)) {
         var setParts = [];
         setForEach.call(obj, function (value) {
             setParts.push(inspect(value, obj));
         });
-        return collectionOf('Set', setSize.call(obj), setParts);
+        return collectionOf('Set', setSize.call(obj), setParts, indent);
     }
     if (isWeakMap(obj)) {
         return weakCollectionOf('WeakMap');
@@ -149,9 +173,12 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return markBoxed(inspect(String(obj)));
     }
     if (!isDate(obj) && !isRegExp(obj)) {
-        var xs = arrObjKeys(obj, inspect);
-        if (xs.length === 0) { return '{}'; }
-        return '{ ' + xs.join(', ') + ' }';
+        var ys = arrObjKeys(obj, inspect);
+        if (ys.length === 0) { return '{}'; }
+        if (indent) {
+            return '{' + indentedJoin(ys, indent) + '}';
+        }
+        return '{ ' + ys.join(', ') + ' }';
     }
     return String(obj);
 };
@@ -299,8 +326,39 @@ function weakCollectionOf(type) {
     return type + ' { ? }';
 }
 
-function collectionOf(type, size, entries) {
-    return type + ' (' + size + ') {' + entries.join(', ') + '}';
+function collectionOf(type, size, entries, indent) {
+    var joinedEntries = indent ? indentedJoin(entries, indent) : entries.join(', ');
+    return type + ' (' + size + ') {' + joinedEntries + '}';
+}
+
+function singleLineValues(xs) {
+    for (var i = 0; i < xs.length; i++) {
+        if (indexOf(xs[i], '\n') >= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function getIndent(opts, depth) {
+    var baseIndent;
+    if (opts.indent === '\t') {
+        baseIndent = '\t';
+    } else if (typeof opts.indent === 'number' && opts.indent > 0) {
+        baseIndent = Array(opts.indent + 1).join(' ');
+    } else {
+        return null;
+    }
+    return {
+        base: baseIndent,
+        prev: Array(depth + 1).join(baseIndent)
+    };
+}
+
+function indentedJoin(xs, indent) {
+    if (xs.length === 0) { return ''; }
+    var lineJoiner = '\n' + indent.prev + indent.base;
+    return lineJoiner + xs.join(',' + lineJoiner) + '\n' + indent.prev;
 }
 
 function arrObjKeys(obj, inspect) {
