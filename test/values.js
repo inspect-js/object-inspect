@@ -7,6 +7,16 @@ test('values', function (t) {
     t.equal(inspect(obj), '[ {}, [], { \'a-b\': 5 } ]');
 });
 
+test('arrays with properties', function (t) {
+   t.plan(1);
+   var arr = [3];
+   arr.foo = 'bar';
+   var obj = [1, 2, arr];
+   obj.baz = 'quux';
+   obj.index = -1;
+   t.equal(inspect(obj), '[ 1, 2, [ 3, foo: \'bar\' ], baz: \'quux\', index: -1 ]');
+});
+
 test('has', function (t) {
     t.plan(1);
     var has = Object.prototype.hasOwnProperty;
