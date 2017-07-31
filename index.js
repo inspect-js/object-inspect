@@ -41,7 +41,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
-    
+
     function inspect (value, from) {
         if (from) {
             seen = seen.slice();
@@ -154,7 +154,12 @@ function isMap (x) {
     }
     try {
         mapSize.call(x);
-        return true;
+        try {
+            setSize.call(x);
+        } catch (s) {
+            return true;
+        }
+        return x instanceof Map; // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -165,7 +170,12 @@ function isSet (x) {
     }
     try {
         setSize.call(x);
-        return true;
+        try {
+            mapSize.call(x);
+        } catch (m) {
+            return true;
+        }
+        return x instanceof Set; // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }

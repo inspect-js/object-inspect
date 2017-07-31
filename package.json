@@ -4,10 +4,12 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
+    "core-js": "^2.4.1",
     "tape": "^4.7.0"
   },
   "scripts": {
     "test": "npm run tests-only",
+    "pretests-only": "node test-core-js",
     "tests-only": "tape test/*.js"
   },
   "testling": {
