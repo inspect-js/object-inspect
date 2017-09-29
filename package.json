@@ -4,8 +4,8 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "core-js": "^2.4.1",
-    "tape": "^4.7.0"
+    "core-js": "^2.5.1",
+    "tape": "^4.8.0"
   },
   "scripts": {
     "test": "npm run tests-only",
