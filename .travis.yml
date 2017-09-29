@@ -28,6 +28,8 @@ env:
 matrix:
   fast_finish: true
   include:
+    - node_js: "node"
+      env: COVERAGE=true
     - node_js: "8.5"
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "8.4"
