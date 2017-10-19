@@ -9,6 +9,9 @@ var setForEach = hasSet && Set.prototype.forEach;
 var booleanValueOf = Boolean.prototype.valueOf;
 var objectToString = Object.prototype.toString;
 
+var inspectCustom = require('./util.inspect').custom;
+var inspectSymbol = (inspectCustom && isSymbol(inspectCustom)) ? inspectCustom : null;
+
 module.exports = function inspect_ (obj, opts, depth, seen) {
     if (typeof obj === 'undefined') {
         return 'undefined';
@@ -78,8 +81,12 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         if (parts.length === 0) return '[' + String(obj) + ']';
         return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
     }
-    if (typeof obj === 'object' && typeof obj.inspect === 'function') {
-        return obj.inspect();
+    if (typeof obj === 'object') {
+        if (inspectSymbol && typeof obj[inspectSymbol] === 'function') {
+            return obj[inspectSymbol]();
+        } else if (typeof obj.inspect === 'function') {
+            return obj.inspect();
+        }
     }
     if (isMap(obj)) {
         var parts = [];
