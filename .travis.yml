@@ -164,30 +164,6 @@ matrix:
       env: TEST=true ALLOW_FAILURE=true
     - node_js: "0.4"
       env: TEST=true ALLOW_FAILURE=true
-    ##- node_js: "7"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "6"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "5"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "4"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "iojs"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "0.12"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "0.10"
-      #env: TEST=true
-      #os: osx
-    #- node_js: "0.8"
-      #env: TEST=true
-      #os: osx
   allow_failures:
     - os: osx
     - env: TEST=true ALLOW_FAILURE=true
