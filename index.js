@@ -15,6 +15,7 @@ var objectToString = Object.prototype.toString;
 var functionToString = Function.prototype.toString;
 var match = String.prototype.match;
 var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
+var getPrototype = Object.getPrototypeOf || function(o) { return o.__proto__; };
 
 var inspectCustom = require('./util.inspect').custom;
 var inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
@@ -145,9 +146,12 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return markBoxed(inspect(String(obj)));
     }
     if (!isDate(obj) && !isRegExp(obj)) {
+        var typeString = getTypeString(obj);
+        var prefix = typeString ? typeString + ' ' : '';
         var xs = arrObjKeys(obj, inspect);
-        if (xs.length === 0) { return '{}'; }
-        return '{ ' + xs.join(', ') + ' }';
+        return xs.length === 0
+            ? prefix + '{}'
+            : prefix + '{ ' + xs.join(', ') + ' }';
     }
     return String(obj);
 };
@@ -318,4 +322,35 @@ function arrObjKeys(obj, inspect) {
         }
     }
     return xs;
+}
+
+// Returns the object's constructor name or null if it is a plain object
+// or doesn't have a prototype.
+function getTypeString(o) {
+    if (Object.prototype.toString.call(o) !== '[object Object]') return null;
+    var prototype = getPrototype(o);
+    if (!prototype) return null;
+
+    var constructorName = o.constructor ? o.constructor.name : null;
+    var isPlainObject = constructorName === 'Object' && looksLikeObjectPrototype(prototype);
+    if (isPlainObject) {
+      return null;
+    }
+
+    return constructorName;
+}
+
+// Indicates whether the specified object appears to be Object.prototype,
+// regardless of the object's realm.
+function looksLikeObjectPrototype(o) {
+  if (o === Object.prototype) return true;
+
+  // Cross-realm objects use a different Object, so we have to use a heuristic.
+  return !getPrototype(o)
+      && o.hasOwnProperty('hasOwnProperty')
+      && o.hasOwnProperty('isPrototypeOf')
+      && o.hasOwnProperty('propertyIsEnumerable')
+      && o.hasOwnProperty('toLocaleString')
+      && o.hasOwnProperty('toString')
+      && o.hasOwnProperty('valueOf');
 }
