@@ -44,7 +44,7 @@ var inspect = require('object-inspect')
 ## var s = inspect(obj, opts={})
 
 Return a string `s` with the string representation of `obj` up to a depth of
-`opts.depth`.
+`opts.depth`. Default depth: `5`.
 
 # install
 
