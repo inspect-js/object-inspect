@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
+  "types": "index.d.ts",
   "devDependencies": {
     "core-js": "^2.5.1",
     "nyc": "^10.3.2",
