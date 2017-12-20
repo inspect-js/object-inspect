@@ -103,7 +103,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         return collectionOf('Set', setSize.call(obj), parts);
     }
     if (isNumber(obj)) {
-        return markBoxed(Number(obj));
+        return markBoxed(inspect(Number(obj)));
     }
     if (isBoolean(obj)) {
         return markBoxed(booleanValueOf.call(obj));
