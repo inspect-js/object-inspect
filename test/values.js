@@ -107,7 +107,11 @@ test('Strings', function (t) {
     var str = 'abc';
 
     t.equal(inspect(str), "'" + str + "'", 'primitive string shows as such');
+    t.equal(inspect(str, { quoteStyle: 'single' }), "'" + str + "'", 'primitive string shows as such, single quoted');
+    t.equal(inspect(str, { quoteStyle: 'double' }), '"' + str + '"', 'primitive string shows as such, double quoted');
     t.equal(inspect(Object(str)), 'Object(' + inspect(str) + ')', 'String object shows as such');
+    t.equal(inspect(Object(str), { quoteStyle: 'single' }), 'Object(' + inspect(str, { quoteStyle: 'single' }) + ')', 'String object shows as such, single quoted');
+    t.equal(inspect(Object(str), { quoteStyle: 'double' }), 'Object(' + inspect(str, { quoteStyle: 'double' }) + ')', 'String object shows as such, double quoted');
 
     t.end();
 });

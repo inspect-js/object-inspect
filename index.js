@@ -13,6 +13,12 @@ var inspectCustom = require('./util.inspect').custom;
 var inspectSymbol = (inspectCustom && isSymbol(inspectCustom)) ? inspectCustom : null;
 
 module.exports = function inspect_ (obj, opts, depth, seen) {
+    if (!opts) opts = {};
+
+    if (has(opts, 'quoteStyle') && (opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double')) {
+        throw new TypeError('option "quoteStyle" must be "single" or "double"');
+    }
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -22,8 +28,9 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     if (typeof obj === 'boolean') {
         return obj ? 'true' : 'false';
     }
+
     if (typeof obj === 'string') {
-        return inspectString(obj);
+        return inspectString(obj, opts);
     }
     if (typeof obj === 'number') {
       if (obj === 0) {
@@ -31,8 +38,6 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
       }
       return String(obj);
     }
-
-    if (!opts) opts = {};
 
     var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
     if (typeof depth === 'undefined') depth = 0;
@@ -65,7 +70,7 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
         for (var i = 0; i < attrs.length; i++) {
-            s += ' ' + attrs[i].name + '="' + quote(attrs[i].value) + '"';
+            s += ' ' + attrs[i].name + '=' + wrapQuotes(quote(attrs[i].value), 'double', opts);
         }
         s += '>';
         if (obj.childNodes && obj.childNodes.length) s += '...';
@@ -118,6 +123,11 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
     }
     return String(obj);
 };
+
+function wrapQuotes (s, defaultStyle, opts) {
+    var quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
+    return quoteChar + s + quoteChar;
+}
 
 function quote (s) {
     return String(s).replace(/"/g, '&quot;');
@@ -197,9 +207,9 @@ function isElement (x) {
     ;
 }
 
-function inspectString (str) {
+function inspectString (str, opts) {
     var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
-    return "'" + s + "'";
+    return wrapQuotes(s, 'single', opts);
 }
 
 function lowbyte (c) {

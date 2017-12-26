@@ -43,8 +43,10 @@ var inspect = require('object-inspect')
 
 ## var s = inspect(obj, opts={})
 
-Return a string `s` with the string representation of `obj` up to a depth of
-`opts.depth`.
+Return a string `s` with the string representation of `obj` up to a depth of `opts.depth`.
+
+Additional options:
+  - `quoteStyle`: must be "single" or "double", if present
 
 # install
 
