@@ -182,4 +182,3 @@ matrix:
   allow_failures:
     - os: osx
     - env: TEST=true ALLOW_FAILURE=true
-    - env: COVERAGE=true

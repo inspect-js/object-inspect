@@ -16,3 +16,13 @@ test('function name', function (t) {
     var obj = [ 1, 2, f, 4 ];
     t.equal(inspect(obj), '[ 1, 2, [Function: xxx], 4 ]');
 });
+
+test('anon function', function (t) {
+    var f = (function () {
+      return function () {};
+    }());
+    var obj = [ 1, 2, f, 4 ];
+    t.equal(inspect(obj), '[ 1, 2, [Function], 4 ]');
+
+    t.end();
+});
