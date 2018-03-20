@@ -1,4 +1,6 @@
 var inspect = require('../');
+var Buffer = require('safer-buffer').Buffer;
+
 var holes = [ 'a', 'b' ];
 holes[4] = 'e', holes[6] = 'g';
 var obj = {
@@ -8,7 +10,7 @@ var obj = {
     d: null,
     e: {
         regex: /^x/i,
-        buf: new Buffer('abc'),
+        buf: Buffer.from('abc'),
         holes: holes
     },
     now: new Date
