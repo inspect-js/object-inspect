@@ -4,8 +4,8 @@
   "instrumentation": false,
   "sourceMap": false,
   "reporter": "html",
-  "lines": 95.95,
-  "statements": 95,
+  "lines": 95.45,
+  "statements": 94.71,
   "functions": 96,
   "branches": 92,
   "exclude": [
