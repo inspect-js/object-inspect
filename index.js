@@ -38,6 +38,9 @@ module.exports = function inspect_ (obj, opts, depth, seen) {
       }
       return String(obj);
     }
+    if (typeof obj === 'bigint') {
+      return String(obj) + 'n';
+    }
 
     var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
     if (typeof depth === 'undefined') depth = 0;
