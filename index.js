@@ -200,7 +200,7 @@ function isSet (x) {
         } catch (m) {
             return true;
         }
-        return x instanceof Set; // core-js workaround, pre-v2.5.0
+        return hasSet && x instanceof Set; // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
