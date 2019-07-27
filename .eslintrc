@@ -4,7 +4,6 @@
     "rules": {
         "indent": [2, 4],
         "strict": 1,
-        "no-octal-escape": 1,
     },
     "globals": {
         "BigInt": false,
