@@ -3,18 +3,18 @@ var test = require('tape');
 
 test('values', function (t) {
     t.plan(1);
-    var obj = [ {}, [], { 'a-b': 5 } ];
+    var obj = [{}, [], { 'a-b': 5 }];
     t.equal(inspect(obj), '[ {}, [], { \'a-b\': 5 } ]');
 });
 
 test('arrays with properties', function (t) {
-   t.plan(1);
-   var arr = [3];
-   arr.foo = 'bar';
-   var obj = [1, 2, arr];
-   obj.baz = 'quux';
-   obj.index = -1;
-   t.equal(inspect(obj), '[ 1, 2, [ 3, foo: \'bar\' ], baz: \'quux\', index: -1 ]');
+    t.plan(1);
+    var arr = [3];
+    arr.foo = 'bar';
+    var obj = [1, 2, arr];
+    obj.baz = 'quux';
+    obj.index = -1;
+    t.equal(inspect(obj), '[ 1, 2, [ 3, foo: \'bar\' ], baz: \'quux\', index: -1 ]');
 });
 
 test('has', function (t) {
@@ -22,17 +22,17 @@ test('has', function (t) {
     var has = Object.prototype.hasOwnProperty;
     delete Object.prototype.hasOwnProperty;
     t.equal(inspect({ a: 1, b: 2 }), '{ a: 1, b: 2 }');
-    Object.prototype.hasOwnProperty = has;
+    Object.prototype.hasOwnProperty = has; // eslint-disable-line no-extend-native
 });
 
 test('indexOf seen', function (t) {
     t.plan(1);
-    var xs = [ 1, 2, 3, {} ];
+    var xs = [1, 2, 3, {}];
     xs.push(xs);
-    
+
     var seen = [];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[ 1, 2, 3, {}, [Circular] ]'
@@ -41,11 +41,11 @@ test('indexOf seen', function (t) {
 
 test('seen seen', function (t) {
     t.plan(1);
-    var xs = [ 1, 2, 3 ];
-    
-    var seen = [ xs ];
+    var xs = [1, 2, 3];
+
+    var seen = [xs];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[Circular]'
@@ -54,11 +54,11 @@ test('seen seen', function (t) {
 
 test('seen seen seen', function (t) {
     t.plan(1);
-    var xs = [ 1, 2, 3 ];
-    
-    var seen = [ 5, xs ];
+    var xs = [1, 2, 3];
+
+    var seen = [5, xs];
     seen.indexOf = undefined;
-    
+
     t.equal(
         inspect(xs, {}, 0, seen),
         '[Circular]'

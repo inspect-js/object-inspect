@@ -4,11 +4,15 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
+    "@ljharb/eslint-config": "^13.1.1",
     "core-js": "^2.5.5",
+    "eslint": "^5.16.0",
     "nyc": "^10.3.2",
     "tape": "^4.9.0"
   },
   "scripts": {
+    "pretest": "npm run lint",
+    "lint": "eslint .",
     "test": "npm run tests-only",
     "posttest": "npm run test:bigint",
     "pretests-only": "node test-core-js",

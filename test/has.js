@@ -22,10 +22,13 @@ var withoutProperty = function (object, property, fn) {
 
 test('when Object#hasOwnProperty is deleted', function (t) {
     t.plan(1);
-    var arr = [1, , 3];
+    var arr = [1, , 3]; // eslint-disable-line no-sparse-arrays
+
+    // eslint-disable-next-line no-extend-native
     Array.prototype[1] = 2; // this is needed to account for "in" vs "hasOwnProperty"
+
     withoutProperty(Object.prototype, 'hasOwnProperty', function () {
         t.equal(inspect(arr), '[ 1, , 3 ]');
     });
-	delete Array.prototype[1];
+    delete Array.prototype[1];
 });

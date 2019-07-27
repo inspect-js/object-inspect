@@ -1,0 +1,44 @@
+{
+    "root": true,
+    "extends": "@ljharb",
+    "rules": {
+        "indent": [2, 4],
+        "strict": 1,
+        "no-octal-escape": 1,
+    },
+    "globals": {
+        "BigInt": false,
+    },
+    "overrides": [
+        {
+            "files": ["test/**", "test-*", "example/**"],
+            "rules": {
+              "array-bracket-newline": 0,
+              "max-params": 0,
+              "max-statements": 0,
+              "max-statements-per-line": 0,
+              "no-magic-numbers": 0,
+              "object-curly-newline": 0,
+              "sort-keys": 0,
+            },
+        },
+        {
+            "files": ["example/**"],
+            "rules": {
+                "no-console": 0,
+            },
+        },
+        {
+            "files": ["test/browser/**"],
+            "env": {
+                "browser": true,
+            },
+        },
+        {
+            "files": ["test/bigint*"],
+            "rules": {
+                "new-cap": [2, { "capIsNewExceptions": ["BigInt"] }],
+            },
+        },
+    ],
+}
