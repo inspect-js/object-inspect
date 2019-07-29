@@ -2,8 +2,16 @@
     "root": true,
     "extends": "@ljharb",
     "rules": {
+		"complexity": 0,
+		"func-style": [2, 'declaration'],
         "indent": [2, 4],
-        "strict": 1,
+        "max-lines-per-function": [2, 120],
+        "max-params": [2, 4],
+		"max-statements": [2, 80],
+        "max-statements-per-line": [2, { "max": 2 }],
+        "no-magic-numbers": 0,
+		"no-param-reassign": 1,
+        "strict": 0, // TODO
     },
     "globals": {
         "BigInt": false,
@@ -16,7 +24,6 @@
               "max-params": 0,
               "max-statements": 0,
               "max-statements-per-line": 0,
-              "no-magic-numbers": 0,
               "object-curly-newline": 0,
               "sort-keys": 0,
             },
@@ -37,6 +44,15 @@
             "files": ["test/bigint*"],
             "rules": {
                 "new-cap": [2, { "capIsNewExceptions": ["BigInt"] }],
+            },
+        },
+        {
+            "files": "index.js",
+            "globals": {
+                "HTMLElement": false,
+            },
+            "rules": {
+                "no-use-before-define": 1,
             },
         },
     ],

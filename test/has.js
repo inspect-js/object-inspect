@@ -1,7 +1,7 @@
 var inspect = require('../');
 var test = require('tape');
 
-var withoutProperty = function (object, property, fn) {
+function withoutProperty(object, property, fn) {
     var original;
     if (Object.getOwnPropertyDescriptor) {
         original = Object.getOwnPropertyDescriptor(object, property);
@@ -18,7 +18,7 @@ var withoutProperty = function (object, property, fn) {
             object[property] = original;
         }
     }
-};
+}
 
 test('when Object#hasOwnProperty is deleted', function (t) {
     t.plan(1);
