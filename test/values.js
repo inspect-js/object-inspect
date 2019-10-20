@@ -167,5 +167,8 @@ test('RegExps', function (t) {
     t.equal(inspect(/a/g), '/a/g', 'regex shows properly');
     t.equal(inspect(new RegExp('abc', 'i')), '/abc/i', 'new RegExp shows properly');
 
+    var match = 'abc abc'.match(/[ab]+/);
+    t.equal(inspect(match), '[ \'ab\', index: 0, input: \'abc abc\', groups: undefined ]', 'RegExp match object shows properly');
+
     t.end();
 });
