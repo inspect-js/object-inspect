@@ -87,6 +87,16 @@ test('Map', { skip: typeof Map !== 'function' }, function (t) {
     t.end();
 });
 
+test('WeakMap', { skip: typeof WeakMap !== 'function' }, function (t) {
+    var map = new WeakMap();
+    map.set({ a: 1 }, ['b']);
+    var expectedString = 'WeakMap { ? }';
+    t.equal(inspect(map), expectedString, 'new WeakMap([[{ a: 1 }, ["b"]]]) should not show size or contents');
+    t.equal(inspect(new WeakMap()), 'WeakMap { ? }', 'empty WeakMap should not show as empty');
+
+    t.end();
+});
+
 test('Set', { skip: typeof Set !== 'function' }, function (t) {
     var set = new Set();
     set.add({ a: 1 });
@@ -99,6 +109,16 @@ test('Set', { skip: typeof Set !== 'function' }, function (t) {
     nestedSet.add(set);
     nestedSet.add(nestedSet);
     t.equal(inspect(nestedSet), 'Set (2) {' + expectedString + ', [Circular]}', 'Set containing a Set should work');
+
+    t.end();
+});
+
+test('WeakSet', { skip: typeof WeakSet !== 'function' }, function (t) {
+    var map = new WeakSet();
+    map.add({ a: 1 });
+    var expectedString = 'WeakSet { ? }';
+    t.equal(inspect(map), expectedString, 'new WeakSet([{ a: 1 }]) should not show size or contents');
+    t.equal(inspect(new WeakSet()), 'WeakSet { ? }', 'empty WeakSet should not show as empty');
 
     t.end();
 });

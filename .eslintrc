@@ -5,9 +5,9 @@
 		"complexity": 0,
 		"func-style": [2, 'declaration'],
         "indent": [2, 4],
-        "max-lines-per-function": [2, 120],
+        "max-lines-per-function": [2, 130],
         "max-params": [2, 4],
-		"max-statements": [2, 80],
+		"max-statements": [2, 90],
         "max-statements-per-line": [2, { "max": 2 }],
         "no-magic-numbers": 0,
 		"no-param-reassign": 1,
@@ -15,6 +15,8 @@
     },
     "globals": {
         "BigInt": false,
+        "WeakSet": false,
+        "WeakMap": false,
     },
     "overrides": [
         {
