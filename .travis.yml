@@ -27,15 +27,12 @@ script:
   - 'if [ -n "${POSTTEST-}" ]; then npm run posttest ; fi'
   - 'if [ -n "${COVERAGE-}" ]; then npm run coverage ; fi'
   - 'if [ -n "${TEST-}" ]; then npm run tests-only ; fi'
-  - 'if [ -n "${BIGINT-}" ]; then npm run test:bigint ; fi'
 sudo: false
 env:
   - TEST=true
 matrix:
   fast_finish: true
   include:
-    - node_js: "10.0"
-      env: BIGINT=true
     - node_js: "lts/*"
       env: PRETEST=true
     - node_js: "node"
