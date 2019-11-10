@@ -177,7 +177,7 @@ function indexOf(xs, x) {
 }
 
 function isMap(x) {
-    if (!mapSize) {
+    if (!mapSize || !x || typeof x !== 'object') {
         return false;
     }
     try {
@@ -193,7 +193,7 @@ function isMap(x) {
 }
 
 function isSet(x) {
-    if (!setSize) {
+    if (!setSize || !x || typeof x !== 'object') {
         return false;
     }
     try {
