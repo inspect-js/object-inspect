@@ -4,10 +4,10 @@
   "instrumentation": false,
   "sourceMap": false,
   "reporter": "html",
-  "lines": 94.94,
-  "statements": 94.25,
+  "lines": 94,
+  "statements": 94,
   "functions": 96,
-  "branches": 91.02,
+  "branches": 90,
   "exclude": [
     "coverage",
     "example",
