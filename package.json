@@ -4,11 +4,11 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "@ljharb/eslint-config": "^13.1.1",
-    "core-js": "^2.5.5",
-    "eslint": "^5.16.0",
+    "@ljharb/eslint-config": "^15.0.0",
+    "core-js": "^2.6.10",
+    "eslint": "^6.6.0",
     "nyc": "^10.3.2",
-    "tape": "^4.9.0"
+    "tape": "^4.11.0"
   },
   "scripts": {
     "pretest": "npm run lint",
@@ -55,5 +55,11 @@
   "license": "MIT",
   "browser": {
     "./util.inspect.js": false
+  },
+  "greenkeeper": {
+    "ignore": [
+      "nyc",
+      "core-js"
+    ]
   }
 }
