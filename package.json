@@ -4,7 +4,7 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "@ljharb/eslint-config": "^15.0.0",
+    "@ljharb/eslint-config": "^15.0.1",
     "core-js": "^2.6.10",
     "eslint": "^6.6.0",
     "nyc": "^10.3.2",
