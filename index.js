@@ -1,11 +1,14 @@
+'use strict';
+
+var iterate = require('iterate-value');
+var getIterator = require('es-get-iterator');
+
 var hasMap = typeof Map === 'function' && Map.prototype;
 var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
 var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
-var mapForEach = hasMap && Map.prototype.forEach;
 var hasSet = typeof Set === 'function' && Set.prototype;
 var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
 var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
-var setForEach = hasSet && Set.prototype.forEach;
 var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
 var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
@@ -113,17 +116,15 @@ module.exports = function inspect_(obj, options, depth, seen) {
         }
     }
     if (isMap(obj)) {
-        var mapParts = [];
-        mapForEach.call(obj, function (value, key) {
-            mapParts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
-        });
+		var mapParts = iterate.map(getIterator(obj), function (entry) {
+			return inspect(entry[1], obj) + ' => ' + inspect(entry[0], obj);
+		});
         return collectionOf('Map', mapSize.call(obj), mapParts);
     }
     if (isSet(obj)) {
-        var setParts = [];
-        setForEach.call(obj, function (value) {
-            setParts.push(inspect(value, obj));
-        });
+		var setParts = iterate.map(getIterator(obj), function (value) {
+			return inspect(value, obj);
+		});
         return collectionOf('Set', setSize.call(obj), setParts);
     }
     if (isWeakMap(obj)) {

@@ -68,5 +68,9 @@
       "nyc",
       "core-js"
     ]
+  },
+  "dependencies": {
+    "es-get-iterator": "^1.0.1",
+    "iterate-value": "^1.0.0"
   }
 }
