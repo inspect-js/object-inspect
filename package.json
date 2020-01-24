@@ -68,5 +68,10 @@
       "nyc",
       "core-js"
     ]
+  },
+  "dependencies": {
+    "has": "^1.0.3",
+    "isarray": "^2.0.5",
+    "iterate-value": "^1.0.2"
   }
 }
