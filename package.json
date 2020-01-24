@@ -37,9 +37,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/object-inspect.git"
+    "url": "git://github.com/inspect-js/object-inspect.git"
   },
-  "homepage": "https://github.com/substack/object-inspect",
+  "homepage": "https://github.com/inspect-js/object-inspect",
   "keywords": [
     "inspect",
     "util.inspect",

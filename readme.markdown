@@ -2,9 +2,7 @@
 
 string representations of objects in node and the browser
 
-[![testling badge](https://ci.testling.com/substack/object-inspect.png)](https://ci.testling.com/substack/object-inspect)
-
-[![build status](https://secure.travis-ci.org/substack/object-inspect.png)](http://travis-ci.org/substack/object-inspect)
+[![build status](https://secure.travis-ci.com/inspect-js/object-inspect.png)](https://travis-ci.com/inspect-js/object-inspect)
 
 # example
 
