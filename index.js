@@ -78,7 +78,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
 
     if (typeof obj === 'function') {
         var name = nameOf(obj);
-        return '[Function' + (name ? ': ' + name : '') + ']';
+        return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']';
     }
     if (isSymbol(obj)) {
         var symString = Symbol.prototype.toString.call(obj);

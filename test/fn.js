@@ -22,7 +22,7 @@ test('anon function', function (t) {
         return function () {};
     }());
     var obj = [1, 2, f, 4];
-    t.equal(inspect(obj), '[ 1, 2, [Function], 4 ]');
+    t.equal(inspect(obj), '[ 1, 2, [Function (anonymous)], 4 ]');
 
     t.end();
 });
