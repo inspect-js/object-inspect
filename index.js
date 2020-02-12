@@ -59,7 +59,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
     if (typeof depth === 'undefined') { depth = 0; }
     if (depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
-        return '[Object]';
+        return isArray(obj) ? '[Array]' : '[Object]';
     }
 
     if (typeof seen === 'undefined') {
