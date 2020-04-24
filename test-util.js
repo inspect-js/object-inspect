@@ -12,6 +12,9 @@ mod.exports = function (value, opts) {
     if (has(options, 'quoteStyle') && options.quoteStyle !== 'single' && options.quoteStyle !== 'double') {
         throw new TypeError('invalid quote style');
     }
+    if (!has(options, 'depth')) {
+        options.depth = 4;
+    }
     if (inspect.custom && typeof value.inspect === 'function') {
         value[inspect.custom] = value.inspect;
         delete value.inspect;
