@@ -4,12 +4,13 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "@ljharb/eslint-config": "^16.0.0",
-    "core-js": "^2.5.7",
-    "eslint": "^6.8.0",
+    "@ljharb/eslint-config": "^17.1.0",
+    "aud": "^1.1.2",
+    "core-js": "^2.6.11",
+    "eslint": "^7.1.0",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^1.1.4",
-    "tape": "^5.0.0"
+    "tape": "^5.0.1"
   },
   "scripts": {
     "prepublish": "safe-publish-latest",
