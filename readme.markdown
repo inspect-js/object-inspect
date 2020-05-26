@@ -45,6 +45,7 @@ Return a string `s` with the string representation of `obj` up to a depth of `op
 
 Additional options:
   - `quoteStyle`: must be "single" or "double", if present
+  - `maxStringLength`: must be `0`, a positive integer, `Infinity`, or `null`, if present
 
 # install
 

@@ -24,6 +24,14 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (has(opts, 'quoteStyle') && (opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double')) {
         throw new TypeError('option "quoteStyle" must be "single" or "double"');
     }
+    if (
+        has(opts, 'maxStringLength') && (typeof opts.maxStringLength === 'number'
+            ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity
+            : opts.maxStringLength !== null
+        )
+    ) {
+        throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
+    }
 
     if (typeof obj === 'undefined') {
         return 'undefined';
@@ -259,6 +267,11 @@ function isElement(x) {
 }
 
 function inspectString(str, opts) {
+    if (str.length > opts.maxStringLength) {
+        var remaining = str.length - opts.maxStringLength;
+        var trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
+        return inspectString(str.slice(0, opts.maxStringLength), opts) + trailer;
+    }
     // eslint-disable-next-line no-control-regex
     var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
     return wrapQuotes(s, 'single', opts);

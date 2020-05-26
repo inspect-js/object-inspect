@@ -10,6 +10,7 @@
     "eslint": "^7.1.0",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^1.1.4",
+    "string.prototype.repeat": "^1.0.0",
     "tape": "^5.0.1"
   },
   "scripts": {

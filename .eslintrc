@@ -3,14 +3,15 @@
     "extends": "@ljharb",
     "rules": {
 		"complexity": 0,
-		"func-style": [2, 'declaration'],
+		"func-style": [2, "declaration"],
         "indent": [2, 4],
-        "max-lines-per-function": [2, 130],
+        "max-lines-per-function": 1,
         "max-params": [2, 4],
 		"max-statements": [2, 90],
         "max-statements-per-line": [2, { "max": 2 }],
         "no-magic-numbers": 0,
-		"no-param-reassign": 1,
+        "no-param-reassign": 1,
+        "operator-linebreak": [2, "before"],
         "strict": 0, // TODO
     },
     "globals": {
