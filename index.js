@@ -33,6 +33,10 @@ module.exports = function inspect_(obj, options, depth, seen) {
     ) {
         throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
     }
+    var customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
+    if (typeof customInspect !== 'boolean') {
+        throw new TypeError('option "customInspect", if provided, must be `true` or `false`');
+    }
 
     if (typeof obj === 'undefined') {
         return 'undefined';
@@ -105,7 +109,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
         if (parts.length === 0) { return '[' + String(obj) + ']'; }
         return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
     }
-    if (typeof obj === 'object') {
+    if (typeof obj === 'object' && customInspect) {
         if (inspectSymbol && typeof obj[inspectSymbol] === 'function') {
             return obj[inspectSymbol]();
         } else if (typeof obj.inspect === 'function') {
