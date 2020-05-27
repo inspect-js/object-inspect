@@ -151,7 +151,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (!isDate(obj) && !isRegExp(obj)) {
         var xs = arrObjKeys(obj, inspect);
-        var tag = toStringTag && toStringTag in obj ? '[' + toStr(obj).slice(8, -1) + '] ' : '';
+        var stringTag = toStringTag && toStringTag in obj ? toStr(obj).slice(8, -1) : '';
+        var protoTag = obj instanceof Object ? '' : 'null prototype';
+        var tag = stringTag || protoTag ? '[' + [].concat(stringTag || [], protoTag || []).join(': ') + '] ' : '';
         if (xs.length === 0) { return tag + '{}'; }
         return tag + '{ ' + xs.join(', ') + ' }';
     }
