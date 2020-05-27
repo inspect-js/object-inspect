@@ -6,18 +6,22 @@ var repeat = require('string.prototype.repeat');
 var inspect = require('..');
 
 test('inspect', function (t) {
-    t.plan(1);
-    var obj = [{ inspect: function () { return '!XYZ¡'; } }, []];
+    t.plan(3);
+    var obj = [{ inspect: function xyzInspect() { return '!XYZ¡'; } }, []];
     t.equal(inspect(obj), '[ !XYZ¡, [] ]');
+    t.equal(inspect(obj, { customInspect: true }), '[ !XYZ¡, [] ]');
+    t.equal(inspect(obj, { customInspect: false }), '[ { inspect: [Function: xyzInspect] }, [] ]');
 });
 
-test('inspect custom symbol', { skip: !hasSymbols || !utilInspect }, function (t) {
-    t.plan(1);
+test('inspect custom symbol', { skip: !hasSymbols || !utilInspect || !utilInspect.custom }, function (t) {
+    t.plan(3);
 
-    var obj = { inspect: function () { return 'string'; } };
-    obj[utilInspect.custom] = function () { return 'symbol'; };
+    var obj = { inspect: function stringInspect() { return 'string'; } };
+    obj[utilInspect.custom] = function custom() { return 'symbol'; };
 
     t.equal(inspect([obj, []]), '[ ' + (utilInspect.custom ? 'symbol' : 'string') + ', [] ]');
+    t.equal(inspect([obj, []], { customInspect: true }), '[ ' + (utilInspect.custom ? 'symbol' : 'string') + ', [] ]');
+    t.equal(inspect([obj, []], { customInspect: false }), '[ { inspect: [Function: stringInspect] }, [] ]');
 });
 
 test('maxStringLength', function (t) {

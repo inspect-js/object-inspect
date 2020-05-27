@@ -44,8 +44,9 @@ var inspect = require('object-inspect')
 Return a string `s` with the string representation of `obj` up to a depth of `opts.depth`.
 
 Additional options:
-  - `quoteStyle`: must be "single" or "double", if present
-  - `maxStringLength`: must be `0`, a positive integer, `Infinity`, or `null`, if present
+  - `quoteStyle`: must be "single" or "double", if present. Default `'single'` for strings, `'double'` for HTML elements.
+  - `maxStringLength`: must be `0`, a positive integer, `Infinity`, or `null`, if present. Default `Infinity`.
+  - `customInspect`: When `true`, a custom inspect method function will be invoked. Default `true`.
 
 # install
 
