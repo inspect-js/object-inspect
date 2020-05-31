@@ -57,6 +57,10 @@
     "email": "mail@substack.net",
     "url": "http://substack.net"
   },
+  "files": [
+    "index.js",
+    "util.inspect.js"
+  ],
   "funding": {
     "url": "https://github.com/sponsors/ljharb"
   },
