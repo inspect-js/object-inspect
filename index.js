@@ -15,6 +15,7 @@ var objectToString = Object.prototype.toString;
 var functionToString = Function.prototype.toString;
 var match = String.prototype.match;
 var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
+var symToString = typeof Symbol === 'function' ? Symbol.prototype.toString : null;
 
 var inspectCustom = require('./util.inspect').custom;
 var inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
@@ -106,7 +107,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']';
     }
     if (isSymbol(obj)) {
-        var symString = Symbol.prototype.toString.call(obj);
+        var symString = symToString.call(obj);
         return typeof obj === 'object' ? markBoxed(symString) : symString;
     }
     if (isElement(obj)) {
