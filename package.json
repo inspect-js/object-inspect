@@ -7,7 +7,7 @@
     "@ljharb/eslint-config": "^17.1.0",
     "aud": "^1.1.2",
     "core-js": "^2.6.11",
-    "eslint": "^7.1.0",
+    "eslint": "^7.5.0",
     "for-each": "^0.3.3",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^1.1.4",
