@@ -315,10 +315,14 @@ function inspectString(str, opts) {
 function lowbyte(c) {
     var n = c.charCodeAt(0);
     var x = {
-        8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r'
+        8: 'b',
+        9: 't',
+        10: 'n',
+        12: 'f',
+        13: 'r'
     }[n];
     if (x) { return '\\' + x; }
-    return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
+    return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16).toUpperCase();
 }
 
 function markBoxed(str) {
