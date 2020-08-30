@@ -168,11 +168,8 @@ test('RegExps', function (t) {
     t.equal(inspect(new RegExp('abc', 'i')), '/abc/i', 'new RegExp shows properly');
 
     var match = 'abc abc'.match(/[ab]+/);
-    if (!('groups' in match)) {
-        // for node < 10
-        match.groups = undefined;
-    }
-    t.equal(inspect(match), '[ \'ab\', index: 0, input: \'abc abc\', groups: undefined ]', 'RegExp match object shows properly');
+    delete match.groups; // for node < 10
+    t.equal(inspect(match), '[ \'ab\', index: 0, input: \'abc abc\' ]', 'RegExp match object shows properly');
 
     t.end();
 });
