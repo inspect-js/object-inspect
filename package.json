@@ -19,10 +19,10 @@
     "pretest": "npm run lint",
     "lint": "eslint .",
     "test": "npm run tests-only",
-    "pretests-only": "node test-core-js",
-    "tests-only": "tape test/*.js",
-    "posttest": "npx aud --production",
-    "coverage": "nyc npm run tests-only"
+    "tests-only": "nyc npm run tests-only:tape",
+    "pretests-only:tape": "node test-core-js",
+    "tests-only:tape": "tape 'test/*.js'",
+    "posttest": "npx aud --production"
   },
   "testling": {
     "files": [
