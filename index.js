@@ -69,7 +69,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
         }
         return String(obj);
     }
-    if (typeof obj === 'bigint') { // eslint-disable-line valid-typeof
+    if (typeof obj === 'bigint') {
         return String(obj) + 'n';
     }
 
