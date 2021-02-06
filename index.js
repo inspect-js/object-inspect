@@ -226,6 +226,14 @@ function indexOf(xs, x) {
     return -1;
 }
 
+function instanceOf(object, proto) {
+    try {
+        return object instanceof proto;
+    } catch (e) {
+        return false;
+    }
+}
+
 function isMap(x) {
     if (!mapSize || !x || typeof x !== 'object') {
         return false;
@@ -237,7 +245,7 @@ function isMap(x) {
         } catch (s) {
             return true;
         }
-        return x instanceof Map; // core-js workaround, pre-v2.5.0
+        return instanceOf(x, Map); // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -253,7 +261,7 @@ function isWeakMap(x) {
         } catch (s) {
             return true;
         }
-        return x instanceof WeakMap; // core-js workaround, pre-v2.5.0
+        return instanceOf(x, WeakMap); // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -269,7 +277,7 @@ function isSet(x) {
         } catch (m) {
             return true;
         }
-        return x instanceof Set; // core-js workaround, pre-v2.5.0
+        return instanceOf(x, Set); // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -285,14 +293,14 @@ function isWeakSet(x) {
         } catch (s) {
             return true;
         }
-        return x instanceof WeakSet; // core-js workaround, pre-v2.5.0
+        return instanceOf(x, WeakSet); // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
 
 function isElement(x) {
     if (!x || typeof x !== 'object') { return false; }
-    if (typeof HTMLElement !== 'undefined' && x instanceof HTMLElement) {
+    if (typeof HTMLElement !== 'undefined' && instanceOf(x, HTMLElement)) {
         return true;
     }
     return typeof x.nodeName === 'string' && typeof x.getAttribute === 'function';
