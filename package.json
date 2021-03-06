@@ -9,6 +9,8 @@
     "core-js": "^2.6.12",
     "eslint": "^7.21.0",
     "for-each": "^0.3.3",
+    "functions-have-names": "^1.2.2",
+    "make-arrow-function": "^1.2.0",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^1.1.4",
     "string.prototype.repeat": "^1.0.0",
