@@ -226,7 +226,17 @@ function isNumber(obj) { return toStr(obj) === '[object Number]' && (!hasToStrin
 function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
 // Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
 function isSymbol(obj) { return toStr(obj) === '[object Symbol]'; }
-function isBigInt(obj) { return toStr(obj) === '[object BigInt]'; }
+
+function isBigInt(obj) {
+    if (!obj || typeof obj !== 'object' || !bigIntValueOf) {
+        return false;
+    }
+    try {
+        bigIntValueOf.call(obj);
+        return true;
+    } catch (e) {}
+    return false;
+}
 
 var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
 function has(obj, key) {
