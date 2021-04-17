@@ -10,6 +10,8 @@ var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
 var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
 var weakSetHas = hasWeakSet ? WeakSet.prototype.has : null;
+var hasWeakRef = typeof WeakRef === 'function' && WeakRef.prototype;
+var weakRefDeref = hasWeakRef ? WeakRef.prototype.deref : null;
 var booleanValueOf = Boolean.prototype.valueOf;
 var objectToString = Object.prototype.toString;
 var functionToString = Function.prototype.toString;
@@ -173,6 +175,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (isWeakSet(obj)) {
         return weakCollectionOf('WeakSet');
     }
+    if (isWeakRef(obj)) {
+        return weakCollectionOf('WeakRef');
+    }
     if (isNumber(obj)) {
         return markBoxed(inspect(Number(obj)));
     }
@@ -275,6 +280,17 @@ function isWeakMap(x) {
             return true;
         }
         return x instanceof WeakMap; // core-js workaround, pre-v2.5.0
+    } catch (e) {}
+    return false;
+}
+
+function isWeakRef(x) {
+    if (!weakRefDeref || !x || typeof x !== 'object') {
+        return false;
+    }
+    try {
+        weakRefDeref.call(x);
+        return true;
     } catch (e) {}
     return false;
 }

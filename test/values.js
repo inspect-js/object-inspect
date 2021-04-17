@@ -123,6 +123,22 @@ test('WeakSet', { skip: typeof WeakSet !== 'function' }, function (t) {
     t.end();
 });
 
+test('WeakRef', { skip: typeof WeakRef !== 'function' }, function (t) {
+    var ref = new WeakRef({ a: 1 });
+    var expectedString = 'WeakRef { ? }';
+    t.equal(inspect(ref), expectedString, 'new WeakRef({ a: 1 }) should not show contents');
+
+    t.end();
+});
+
+test('FinalizationRegistry', { skip: typeof FinalizationRegistry !== 'function' }, function (t) {
+    var registry = new FinalizationRegistry(function () {});
+    var expectedString = 'FinalizationRegistry [FinalizationRegistry] {}';
+    t.equal(inspect(registry), expectedString, 'new FinalizationRegistry(function () {}) should work normallys');
+
+    t.end();
+});
+
 test('Strings', function (t) {
     var str = 'abc';
 
