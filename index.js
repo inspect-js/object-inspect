@@ -210,15 +210,18 @@ function quote(s) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-function isArray(obj) { return toStr(obj) === '[object Array]'; }
-function isDate(obj) { return toStr(obj) === '[object Date]'; }
-function isRegExp(obj) { return toStr(obj) === '[object RegExp]'; }
-function isError(obj) { return toStr(obj) === '[object Error]'; }
+var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+
+function isArray(obj) { return toStr(obj) === '[object Array]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isDate(obj) { return toStr(obj) === '[object Date]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isRegExp(obj) { return toStr(obj) === '[object RegExp]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isError(obj) { return toStr(obj) === '[object Error]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isString(obj) { return toStr(obj) === '[object String]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isNumber(obj) { return toStr(obj) === '[object Number]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && (!hasToStringTag || !(Symbol.toStringTag in obj)); }
+// Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
 function isSymbol(obj) { return toStr(obj) === '[object Symbol]'; }
-function isString(obj) { return toStr(obj) === '[object String]'; }
-function isNumber(obj) { return toStr(obj) === '[object Number]'; }
 function isBigInt(obj) { return toStr(obj) === '[object BigInt]'; }
-function isBoolean(obj) { return toStr(obj) === '[object Boolean]'; }
 
 var hasOwn = Object.prototype.hasOwnProperty || function (key) { return key in this; };
 function has(obj, key) {
