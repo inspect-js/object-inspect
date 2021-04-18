@@ -1,5 +1,8 @@
+'use strict';
+
 var inspect = require('../');
 var test = require('tape');
+var hasSymbols = require('has-symbols')();
 
 test('values', function (t) {
     t.plan(1);
@@ -69,6 +72,19 @@ test('symbols', { skip: typeof Symbol !== 'function' }, function (t) {
     var sym = Symbol('foo');
     t.equal(inspect(sym), 'Symbol(foo)', 'Symbol("foo") should be "Symbol(foo)"');
     t.equal(inspect(Object(sym)), 'Object(Symbol(foo))', 'Object(Symbol("foo")) should be "Object(Symbol(foo))"');
+
+    t.test('toStringTag', { skip: !hasSymbols || typeof Symbol.toStringTag !== 'symbol' }, function (st) {
+        st.plan(1);
+
+        var faker = {};
+        faker[Symbol.toStringTag] = 'Symbol';
+        st.equal(
+            inspect(faker),
+            '{ [Symbol(Symbol.toStringTag)]: \'Symbol\' }',
+            'object lying about being a Symbol inspects as an object'
+        );
+    });
+
     t.end();
 });
 
