@@ -12,6 +12,7 @@ jobs:
       - uses: ljharb/actions/node/matrix@main
         id: set-matrix
         with:
+          versionsAsRoot: true
           preset: '0.x'
 
   stable:
@@ -21,7 +22,11 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.matrix.outputs.stable) }}
+      matrix:
+        node-version: ${{ fromJson(needs.matrix.outputs.stable) }}
+        command:
+          - 'tests-only'
+          - 'test:corejs'
 
     steps:
       - uses: actions/checkout@v2
@@ -31,7 +36,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache-node-modules-key: node_modules-${{ github.workflow }}-${{ github.action }}-${{ github.run_id }}
           skip-ls-check: true
-      - run: npm run tests-only
+      - run: npm run ${{ matrix.command }}
       - uses: codecov/codecov-action@v1
 
   unstable:
@@ -43,7 +48,11 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.matrix.outputs.unstable) }}
+      matrix:
+        node-version: ${{ fromJson(needs.matrix.outputs.unstable) }}
+        command:
+          - 'tests-only'
+          - 'test:corejs'
 
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +62,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache-node-modules-key: node_modules-${{ github.workflow }}-${{ github.action }}-${{ github.run_id }}
           skip-ls-check: true
-      - run: npm run tests-only
+      - run: npm run ${{ matrix.command }}
       - uses: codecov/codecov-action@v1
 
   node:

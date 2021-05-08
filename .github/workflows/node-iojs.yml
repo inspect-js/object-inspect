@@ -12,6 +12,7 @@ jobs:
       - uses: ljharb/actions/node/matrix@main
         id: set-matrix
         with:
+          versionsAsRoot: true
           preset: 'iojs'
 
   latest:
@@ -21,7 +22,11 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.matrix.outputs.latest) }}
+      matrix:
+        node-version: ${{ fromJson(needs.matrix.outputs.latest) }}
+        command:
+          - 'tests-only'
+          - 'test:corejs'
 
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +35,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
-      - run: npm run tests-only
+      - run: npm run ${{ matrix.command }}
       - uses: codecov/codecov-action@v1
 
   minors:
@@ -42,7 +47,11 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.matrix.outputs.minors) }}
+      matrix:
+        node-version: ${{ fromJson(needs.matrix.outputs.minors) }}
+        command:
+          - 'tests-only'
+          - 'test:corejs'
 
     steps:
       - uses: actions/checkout@v2
@@ -51,7 +60,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           skip-ls-check: true
-      - run: npm run tests-only
+      - run: npm run ${{ matrix.command }}
       - uses: codecov/codecov-action@v1
 
   node:
