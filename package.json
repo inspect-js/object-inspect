@@ -4,10 +4,10 @@
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "devDependencies": {
-    "@ljharb/eslint-config": "^17.5.1",
-    "aud": "^1.1.4",
+    "@ljharb/eslint-config": "^17.6.0",
+    "aud": "^1.1.5",
     "core-js": "^2.6.12",
-    "eslint": "^7.24.0",
+    "eslint": "^7.26.0",
     "for-each": "^0.3.3",
     "functions-have-names": "^1.2.2",
     "make-arrow-function": "^1.2.0",
