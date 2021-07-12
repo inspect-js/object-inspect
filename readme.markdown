@@ -53,7 +53,7 @@ Return a string `s` with the string representation of `obj` up to a depth of `op
 Additional options:
   - `quoteStyle`: must be "single" or "double", if present. Default `'single'` for strings, `'double'` for HTML elements.
   - `maxStringLength`: must be `0`, a positive integer, `Infinity`, or `null`, if present. Default `Infinity`.
-  - `customInspect`: When `true`, a custom inspect method function will be invoked. Default `true`.
+  - `customInspect`: When `true`, a custom inspect method function will be invoked (either undere the `util.inspect.custom` symbol, or the `inspect` property). When the string `'symbol'`, only the symbol method will be invoked. Default `true`.
   - `indent`: must be "\t", `null`, or a positive integer. Default `null`.
 
 # install

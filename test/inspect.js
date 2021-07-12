@@ -6,30 +6,40 @@ var repeat = require('string.prototype.repeat');
 var inspect = require('..');
 
 test('inspect', function (t) {
-    t.plan(4);
+    t.plan(5);
+
     var obj = [{ inspect: function xyzInspect() { return '!XYZ¡'; } }, []];
-    t.equal(inspect(obj), '[ !XYZ¡, [] ]');
-    t.equal(inspect(obj, { customInspect: true }), '[ !XYZ¡, [] ]');
-    t.equal(inspect(obj, { customInspect: false }), '[ { inspect: [Function: xyzInspect] }, [] ]');
+    var stringResult = '[ !XYZ¡, [] ]';
+    var falseResult = '[ { inspect: [Function: xyzInspect] }, [] ]';
+
+    t.equal(inspect(obj), stringResult);
+    t.equal(inspect(obj, { customInspect: true }), stringResult);
+    t.equal(inspect(obj, { customInspect: 'symbol' }), falseResult);
+    t.equal(inspect(obj, { customInspect: false }), falseResult);
     t['throws'](
-        function () { inspect(obj, { customInspect: 'not a boolean' }); },
+        function () { inspect(obj, { customInspect: 'not a boolean or "symbol"' }); },
         TypeError,
-        '`customInspect` must be a boolean'
+        '`customInspect` must be a boolean or the string "symbol"'
     );
 });
 
 test('inspect custom symbol', { skip: !hasSymbols || !utilInspect || !utilInspect.custom }, function (t) {
-    t.plan(3);
+    t.plan(4);
 
     var obj = { inspect: function stringInspect() { return 'string'; } };
     obj[utilInspect.custom] = function custom() { return 'symbol'; };
 
-    t.equal(inspect([obj, []]), '[ ' + (utilInspect.custom ? 'symbol' : 'string') + ', [] ]');
-    t.equal(inspect([obj, []], { customInspect: true }), '[ ' + (utilInspect.custom ? 'symbol' : 'string') + ', [] ]');
-    t.equal(
-        inspect([obj, []], { customInspect: false }),
-        '[ { inspect: [Function: stringInspect]' + (utilInspect.custom ? ', [' + inspect(utilInspect.custom) + ']: [Function: custom]' : '') + ' }, [] ]'
-    );
+    var symbolResult = '[ symbol, [] ]';
+    var stringResult = '[ string, [] ]';
+    var falseResult = '[ { inspect: [Function: stringInspect]' + (utilInspect.custom ? ', [' + inspect(utilInspect.custom) + ']: [Function: custom]' : '') + ' }, [] ]';
+
+    var symbolStringFallback = utilInspect.custom ? symbolResult : stringResult;
+    var symbolFalseFallback = utilInspect.custom ? symbolResult : falseResult;
+
+    t.equal(inspect([obj, []]), symbolStringFallback);
+    t.equal(inspect([obj, []], { customInspect: true }), symbolStringFallback);
+    t.equal(inspect([obj, []], { customInspect: 'symbol' }), symbolFalseFallback);
+    t.equal(inspect([obj, []], { customInspect: false }), falseResult);
 });
 
 test('symbols', { skip: !hasSymbols }, function (t) {
