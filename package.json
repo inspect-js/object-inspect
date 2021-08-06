@@ -7,7 +7,7 @@
     "@ljharb/eslint-config": "^17.6.0",
     "aud": "^1.1.5",
     "core-js": "^2.6.12",
-    "eslint": "^7.30.0",
+    "eslint": "^7.32.0",
     "for-each": "^0.3.3",
     "functions-have-names": "^1.2.2",
     "has-tostringtag": "^1.0.0",
@@ -15,7 +15,7 @@
     "nyc": "^10.3.2",
     "safe-publish-latest": "^1.1.4",
     "string.prototype.repeat": "^1.0.0",
-    "tape": "^5.2.2"
+    "tape": "^5.3.0"
   },
   "scripts": {
     "prepublish": "not-in-publish || npm run prepublishOnly",
