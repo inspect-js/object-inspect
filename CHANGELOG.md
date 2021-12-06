@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.11.1](https://github.com/inspect-js/object-inspect/compare/v1.11.0...v1.11.1) - 2021-12-05
+
+### Commits
+
+- [meta] add `auto-changelog` [`7dbdd22`](https://github.com/inspect-js/object-inspect/commit/7dbdd228401d6025d8b7391476d88aee9ea9bbdf)
+- [actions] reuse common workflows [`c8823bc`](https://github.com/inspect-js/object-inspect/commit/c8823bc0a8790729680709d45fb6e652432e91aa)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `safe-publish-latest`, `tape` [`7532b12`](https://github.com/inspect-js/object-inspect/commit/7532b120598307497b712890f75af8056f6d37a6)
+- [Refactor] use `has-tostringtag` to behave correctly in the presence of symbol shams [`94abb5d`](https://github.com/inspect-js/object-inspect/commit/94abb5d4e745bf33253942dea86b3e538d2ff6c6)
+- [actions] update codecov uploader [`5ed5102`](https://github.com/inspect-js/object-inspect/commit/5ed51025267a00e53b1341357315490ac4eb0874)
+- [Dev Deps] update `eslint`, `tape` [`37b2ad2`](https://github.com/inspect-js/object-inspect/commit/37b2ad26c08d94bfd01d5d07069a0b28ef4e2ad7)
+- [meta] add `sideEffects` flag [`d341f90`](https://github.com/inspect-js/object-inspect/commit/d341f905ef8bffa6a694cda6ddc5ba343532cd4f)
+
 ## [v1.11.0](https://github.com/inspect-js/object-inspect/compare/v1.10.3...v1.11.0) - 2021-07-12
 
 ### Commits
