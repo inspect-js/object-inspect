@@ -3,6 +3,7 @@
   "version": "1.11.0",
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
+  "sideEffects": false,
   "devDependencies": {
     "@ljharb/eslint-config": "^20.0.0",
     "aud": "^1.1.5",
