@@ -6,6 +6,7 @@
   "devDependencies": {
     "@ljharb/eslint-config": "^20.0.0",
     "aud": "^1.1.5",
+    "auto-changelog": "^2.3.0",
     "core-js": "^2.6.12",
     "eslint": "^8.4.0",
     "for-each": "^0.3.3",
@@ -25,7 +26,9 @@
     "test": "npm run tests-only && npm run test:corejs",
     "tests-only": "nyc tape 'test/*.js'",
     "test:corejs": "nyc tape test-core-js.js 'test/*.js'",
-    "posttest": "npx aud --production"
+    "posttest": "npx aud --production",
+    "version": "auto-changelog && git add CHANGELOG.md",
+    "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
   },
   "testling": {
     "files": [
@@ -67,10 +70,12 @@
   "browser": {
     "./util.inspect.js": false
   },
-  "greenkeeper": {
-    "ignore": [
-      "nyc",
-      "core-js"
-    ]
+  "auto-changelog": {
+    "output": "CHANGELOG.md",
+    "template": "keepachangelog",
+    "unreleased": false,
+    "commitLimit": false,
+    "backfillLimit": false,
+    "hideCredit": true
   }
 }
