@@ -9,6 +9,7 @@
     "aud": "^1.1.5",
     "auto-changelog": "^2.3.0",
     "core-js": "^2.6.12",
+    "es-value-fixtures": "^1.2.1",
     "eslint": "^8.4.0",
     "for-each": "^0.3.3",
     "functions-have-names": "^1.2.2",

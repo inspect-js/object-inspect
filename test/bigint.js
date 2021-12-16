@@ -42,5 +42,17 @@ test('bigint', { skip: typeof BigInt === 'undefined' }, function (t) {
         );
     });
 
+    t.test('numericSeparator', function (st) {
+        st.equal(inspect(BigInt(0), { numericSeparator: false }), '0n', '0n, numericSeparator false');
+        st.equal(inspect(BigInt(0), { numericSeparator: true }), '0n', '0n, numericSeparator true');
+
+        st.equal(inspect(BigInt(1234), { numericSeparator: false }), '1234n', '1234n, numericSeparator false');
+        st.equal(inspect(BigInt(1234), { numericSeparator: true }), '1_234n', '1234n, numericSeparator true');
+        st.equal(inspect(BigInt(-1234), { numericSeparator: false }), '-1234n', '1234n, numericSeparator false');
+        st.equal(inspect(BigInt(-1234), { numericSeparator: true }), '-1_234n', '1234n, numericSeparator true');
+
+        st.end();
+    });
+
     t.end();
 });
