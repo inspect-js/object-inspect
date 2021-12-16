@@ -28,7 +28,7 @@ test('when Object#hasOwnProperty is deleted', function (t) {
     Array.prototype[1] = 2; // this is needed to account for "in" vs "hasOwnProperty"
 
     withoutProperty(Object.prototype, 'hasOwnProperty', function () {
-        t.equal(inspect(arr), '[ 1, , 3 ]');
+        t.equal(inspect(arr), '[ 1, <1 empty item>, 3 ]');
     });
     delete Array.prototype[1];
 });

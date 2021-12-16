@@ -16,9 +16,9 @@ test('bigint', { skip: typeof BigInt === 'undefined' }, function (t) {
     t.test('objects', function (st) {
         st.plan(3);
 
-        st.equal(inspect(Object(BigInt(-256))), 'Object(-256n)');
-        st.equal(inspect(Object(BigInt(0))), 'Object(0n)');
-        st.equal(inspect(Object(BigInt(256))), 'Object(256n)');
+        st.equal(inspect(Object(BigInt(-256))), '[BigInt: -256n]');
+        st.equal(inspect(Object(BigInt(0))), '[BigInt: 0n]');
+        st.equal(inspect(Object(BigInt(256))), '[BigInt: 256n]');
     });
 
     t.test('syntactic primitives', function (st) {

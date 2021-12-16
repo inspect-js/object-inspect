@@ -126,7 +126,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isSymbol(obj)) {
         var symString = hasShammedSymbols ? String(obj).replace(/^(Symbol\(.*\))_[^)]*$/, '$1') : symToString.call(obj);
-        return typeof obj === 'object' && !hasShammedSymbols ? markBoxed(symString) : symString;
+        return typeof obj === 'object' && !hasShammedSymbols ? markBoxed(symString, 'Symbol') : symString;
     }
     if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
@@ -180,19 +180,19 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return weakCollectionOf('WeakSet');
     }
     if (isWeakRef(obj)) {
-        return weakCollectionOf('WeakRef');
+        return 'WeakRef {}';
     }
     if (isNumber(obj)) {
-        return markBoxed(inspect(Number(obj)));
+        return markBoxed(inspect(Number(obj)), 'Number');
     }
     if (isBigInt(obj)) {
-        return markBoxed(inspect(bigIntValueOf.call(obj)));
+        return markBoxed(inspect(bigIntValueOf.call(obj)), 'BigInt');
     }
     if (isBoolean(obj)) {
-        return markBoxed(booleanValueOf.call(obj));
+        return markBoxed(booleanValueOf.call(obj), 'Boolean');
     }
     if (isString(obj)) {
-        return markBoxed(inspect(String(obj)));
+        return markBoxed(inspect(String(obj)), 'String');
     }
     if (!isDate(obj) && !isRegExp(obj)) {
         var ys = arrObjKeys(obj, inspect);
@@ -387,12 +387,15 @@ function lowbyte(c) {
     return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16).toUpperCase();
 }
 
-function markBoxed(str) {
+function markBoxed(str, type) {
+    if (type) {
+        return '[' + type + ': ' + str + ']';
+    }
     return 'Object(' + str + ')';
 }
 
 function weakCollectionOf(type) {
-    return type + ' { ? }';
+    return type + ' { <items unknown> }';
 }
 
 function collectionOf(type, size, entries, indent) {
@@ -469,3 +472,5 @@ function arrObjKeys(obj, inspect) {
     }
     return xs;
 }
+
+module.exports = require('util').inspect;

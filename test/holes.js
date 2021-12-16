@@ -10,6 +10,6 @@ test('holes', function (t) {
     t.plan(1);
     t.equal(
         inspect(xs),
-        "[ 'a', 'b', , , , 'f', , 'j', 'k' ]"
+        "[ 'a', 'b', <3 empty items>, 'f', <1 empty item>, 'j', 'k' ]"
     );
 });
