@@ -65,8 +65,7 @@ function addNumericSeparator(num, str) {
     return $replace.call(str, sepRegex, '$&_');
 }
 
-var inspectCustom = require('./util.inspect').custom;
-var inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
+var inspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 module.exports = function inspect_(obj, options, depth, seen) {
     var opts = options || {};
