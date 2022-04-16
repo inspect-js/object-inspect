@@ -16,6 +16,7 @@
     "functions-have-names": "^1.2.2",
     "has-tostringtag": "^1.0.0",
     "make-arrow-function": "^1.2.0",
+    "mock-property": "^1.0.0",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^2.0.0",
     "string.prototype.repeat": "^1.0.0",
