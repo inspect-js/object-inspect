@@ -66,6 +66,12 @@ function addNumericSeparator(num, str) {
 }
 
 var inspectCustom = require('./util.inspect').custom;
+/* eslint-disable no-restricted-properties */
+if (!inspectCustom && typeof Symbol === 'function' && typeof Symbol['for'] === 'function') {
+    inspectCustom = Symbol['for']('nodejs.util.inspect.custom');
+}
+/* eslint-enable no-restricted-properties */
+
 var inspectSymbol = inspectCustom && isSymbol(inspectCustom) ? inspectCustom : null;
 
 module.exports = function inspect_(obj, options, depth, seen) {
@@ -249,6 +255,10 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     return String(obj);
 };
+
+if (inspectSymbol) {
+    module.exports.custom = inspectSymbol;
+}
 
 function wrapQuotes(s, defaultStyle, opts) {
     var quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
