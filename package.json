@@ -89,5 +89,6 @@
       ".github/workflows",
       "./test-core-js.js"
     ]
-  }
+  },
+  "support": true
 }
