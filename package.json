@@ -6,6 +6,7 @@
   "sideEffects": false,
   "devDependencies": {
     "@ljharb/eslint-config": "^21.0.0",
+    "@pkgjs/support": "^0.0.6",
     "aud": "^2.0.0",
     "auto-changelog": "^2.4.0",
     "core-js": "^2.6.12",
@@ -28,7 +29,8 @@
     "prepublish": "not-in-publish || npm run prepublishOnly",
     "prepublishOnly": "safe-publish-latest",
     "pretest": "npm run lint",
-    "lint": "eslint .",
+    "lint": "eslint --ext=js,mjs .",
+    "postlint": "npx @pkgjs/support validate",
     "test": "npm run tests-only && npm run test:corejs",
     "tests-only": "nyc tape 'test/*.js'",
     "test:corejs": "nyc tape test-core-js.js 'test/*.js'",
