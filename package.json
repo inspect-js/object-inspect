@@ -17,6 +17,7 @@
     "functions-have-names": "^1.2.3",
     "has-tostringtag": "^1.0.0",
     "in-publish": "^2.0.1",
+    "jackspeak": "=2.1.1",
     "make-arrow-function": "^1.2.0",
     "mock-property": "^1.0.0",
     "npmignore": "^0.3.0",
