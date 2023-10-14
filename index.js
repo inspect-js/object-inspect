@@ -239,6 +239,13 @@ module.exports = function inspect_(obj, options, depth, seen) {
     if (isString(obj)) {
         return markBoxed(inspect(String(obj)));
     }
+    if (obj === global) {
+        /* eslint-env browser */
+        if (typeof window !== 'undefined') {
+            return '{ [object Window] }';
+        }
+        return '{ [object global] }';
+    }
     if (!isDate(obj) && !isRegExp(obj)) {
         var ys = arrObjKeys(obj, inspect);
         var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
