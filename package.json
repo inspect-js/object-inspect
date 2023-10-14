@@ -7,7 +7,6 @@
   "devDependencies": {
     "@ljharb/eslint-config": "^21.1.0",
     "@pkgjs/support": "^0.0.6",
-    "aud": "^2.0.3",
     "auto-changelog": "^2.4.0",
     "core-js": "^2.6.12",
     "error-cause": "^1.0.5",
