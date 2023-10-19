@@ -7,7 +7,7 @@ var globalThis = require('globalthis')();
 
 test('global object', function (t) {
     /* eslint-env browser */
-    var expected = typeof window === 'undefined' ? 'global' : 'Window';
+    var expected = typeof window === 'undefined' ? 'globalThis' : 'Window';
     t.equal(
         inspect([globalThis]),
         '[ { [object ' + expected + '] } ]'
