@@ -1,6 +1,6 @@
 {
   "name": "object-inspect",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "string representations of objects in node and the browser",
   "main": "index.js",
   "sideEffects": false,
