@@ -20,7 +20,7 @@
     "in-publish": "^2.0.1",
     "jackspeak": "=2.1.1",
     "make-arrow-function": "^1.2.0",
-    "mock-property": "^1.0.2",
+    "mock-property": "^1.0.3",
     "npmignore": "^0.3.0",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^2.0.0",
