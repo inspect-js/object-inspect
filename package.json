@@ -21,7 +21,7 @@
     "jackspeak": "=2.1.1",
     "make-arrow-function": "^1.2.0",
     "mock-property": "^1.0.3",
-    "npmignore": "^0.3.0",
+    "npmignore": "^0.3.1",
     "nyc": "^10.3.2",
     "safe-publish-latest": "^2.0.0",
     "string.prototype.repeat": "^1.0.0",
