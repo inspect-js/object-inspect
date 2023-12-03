@@ -95,5 +95,8 @@
       "./test-core-js.js"
     ]
   },
-  "support": true
+  "support": true,
+  "engines": {
+    "node": ">= 0.4"
+  }
 }
