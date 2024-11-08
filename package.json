@@ -39,7 +39,7 @@
     "test": "npm run tests-only && npm run test:corejs",
     "tests-only": "nyc tape 'test/*.js'",
     "test:corejs": "nyc tape test-core-js.js 'test/*.js'",
-    "posttest": "npx aud --production",
+    "posttest": "npx npm@'>=10.2' audit --production",
     "version": "auto-changelog && git add CHANGELOG.md",
     "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
   },
