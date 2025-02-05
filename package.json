@@ -26,6 +26,7 @@
     "nyc": "^10.3.2",
     "safe-publish-latest": "^2.0.0",
     "safer-buffer": "^2.1.2",
+    "semver": "^6.3.1",
     "string.prototype.repeat": "^1.0.0",
     "tape": "^5.9.0"
   },

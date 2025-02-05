@@ -6,6 +6,7 @@ var mockProperty = require('mock-property');
 var hasSymbols = require('has-symbols/shams')();
 var hasToStringTag = require('has-tostringtag/shams')();
 var forEach = require('for-each');
+var semver = require('semver');
 
 test('values', function (t) {
     t.plan(1);
@@ -215,6 +216,9 @@ test('Proxies', { skip: typeof Proxy !== 'function' || !hasToStringTag }, functi
     var target = { proxy: true };
     var fake = new Proxy(target, { has: function () { return false; } });
 
+    // needed to work around a weird difference in node v6.0 - v6.4 where non-present properties are not logged
+    var isNode60 = semver.satisfies(process.version, '6.0 - 6.4');
+
     forEach([
         'Boolean',
         'Number',
@@ -226,7 +230,7 @@ test('Proxies', { skip: typeof Proxy !== 'function' || !hasToStringTag }, functi
 
         t.equal(
             inspect(fake),
-            '{ proxy: true, [Symbol(Symbol.toStringTag)]: \'' + tag + '\' }',
+            '{ ' + (isNode60 ? '' : 'proxy: true, ') + '[Symbol(Symbol.toStringTag)]: \'' + tag + '\' }',
             'Proxy for + ' + tag + ' shows as the target, which has no slots'
         );
     });
