@@ -62,7 +62,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/inspect-js/object-inspect.git"
+    "url": "ssh://github.com/inspect-js/object-inspect.git"
   },
   "homepage": "https://github.com/inspect-js/object-inspect",
   "keywords": [
