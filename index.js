@@ -66,7 +66,7 @@ function addNumericSeparator(num, str) {
 }
 
 var utilInspect = require('./util.inspect.js');
-var inspectCustom = utilInspect.custom;
+var inspectCustom = utilInspect?.custom;
 var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
 
 var quotes = {
