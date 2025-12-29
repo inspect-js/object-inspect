@@ -80,5 +80,5 @@ MIT
 [downloads-url]: https://npm-stat.com/charts.html?package=object-inspect
 [codecov-image]: https://codecov.io/gh/inspect-js/object-inspect/branch/main/graphs/badge.svg
 [codecov-url]: https://app.codecov.io/gh/inspect-js/object-inspect/
-[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/inspect-js/object-inspect
+[actions-image]: https://img.shields.io/github/check-runs/inspect-js/object-inspect/main
 [actions-url]: https://github.com/inspect-js/object-inspect/actions
