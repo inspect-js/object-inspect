@@ -112,6 +112,20 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     var numericSeparator = opts.numericSeparator;
 
+    if (
+        has(opts, 'maxArrayLength')
+        && (typeof opts.maxArrayLength === 'number'
+            ? opts.maxArrayLength !== Infinity
+                && (opts.maxArrayLength < 0
+                    || opts.maxArrayLength !== opts.maxArrayLength // NaN check
+                    || parseInt(opts.maxArrayLength, 10) !== opts.maxArrayLength)
+            : opts.maxArrayLength !== null
+        )
+    ) {
+        throw new TypeError('option "maxArrayLength", if provided, must be a positive integer, Infinity, or `null`');
+    }
+    var maxArrayLength = typeof opts.maxArrayLength === 'number' ? opts.maxArrayLength : Infinity;
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -190,7 +204,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
-        var xs = arrObjKeys(obj, inspect);
+        var xs = arrObjKeys(obj, inspect, maxArrayLength);
         if (indent && !singleLineValues(xs)) {
             return '[' + indentedJoin(xs, indent) + ']';
         }
@@ -213,21 +227,39 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isMap(obj)) {
         var mapParts = [];
+        var mapLen = mapSize.call(obj);
         if (mapForEach) {
+            var mapCount = 0;
             mapForEach.call(obj, function (value, key) {
-                mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                if (mapCount < maxArrayLength) {
+                    mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                }
+                mapCount += 1;
             });
+            if (mapLen > maxArrayLength) {
+                var mapRemaining = mapLen - maxArrayLength;
+                mapParts.push('... ' + mapRemaining + ' more item' + (mapRemaining > 1 ? 's' : ''));
+            }
         }
-        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
+        return collectionOf('Map', mapLen, mapParts, indent);
     }
     if (isSet(obj)) {
         var setParts = [];
+        var setLen = setSize.call(obj);
         if (setForEach) {
+            var setCount = 0;
             setForEach.call(obj, function (value) {
-                setParts.push(inspect(value, obj));
+                if (setCount < maxArrayLength) {
+                    setParts.push(inspect(value, obj));
+                }
+                setCount += 1;
             });
+            if (setLen > maxArrayLength) {
+                var setRemaining = setLen - maxArrayLength;
+                setParts.push('... ' + setRemaining + ' more item' + (setRemaining > 1 ? 's' : ''));
+            }
         }
-        return collectionOf('Set', setSize.call(obj), setParts, indent);
+        return collectionOf('Set', setLen, setParts, indent);
     }
     if (isWeakMap(obj)) {
         return weakCollectionOf('WeakMap');
@@ -503,13 +535,18 @@ function indentedJoin(xs, indent) {
     return lineJoiner + $join.call(xs, ',' + lineJoiner) + '\n' + indent.prev;
 }
 
-function arrObjKeys(obj, inspect) {
+function arrObjKeys(obj, inspect, maxLength) {
     var isArr = isArray(obj);
     var xs = [];
     if (isArr) {
-        xs.length = obj.length;
-        for (var i = 0; i < obj.length; i++) {
+        var limit = typeof maxLength === 'number' && maxLength < obj.length ? maxLength : obj.length;
+        xs.length = limit;
+        for (var i = 0; i < limit; i++) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
+        }
+        if (typeof maxLength === 'number' && obj.length > maxLength) {
+            var remaining = obj.length - maxLength;
+            xs.push('... ' + remaining + ' more item' + (remaining > 1 ? 's' : ''));
         }
     }
     var syms = typeof gOPS === 'function' ? gOPS(obj) : [];
