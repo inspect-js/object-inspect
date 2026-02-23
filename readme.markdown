@@ -54,6 +54,12 @@ Additional options:
   - `customInspect`: When `true`, a custom inspect method function will be invoked (either undere the `util.inspect.custom` symbol, or the `inspect` property). When the string `'symbol'`, only the symbol method will be invoked. Default `true`.
   - `indent`: must be "\t", `null`, or a positive integer. Default `null`.
   - `numericSeparator`: must be a boolean, if present. Default `false`. If `true`, all numbers will be printed with numeric separators (eg, `1234.5678` will be printed as `'1_234.567_8'`)
+  - `breakLength`: must be a non-negative integer or `Infinity`, if present. Controls single-line vs multi-line output when used with `indent`. Similar to `util.inspect`'s `breakLength` option.
+    - `Infinity`: forces single-line output regardless of length
+    - `0`: forces multi-line output
+    - Finite positive integer: keeps output single-line if length does not exceed this value, otherwise breaks into multiple lines
+    - Default (not specified): preserves original behavior. Objects always use multi-line with `indent`, arrays and collections stay single-line unless an element contains newlines
+    - **Note**: When `breakLength` is specified, objects will also stay single-line if they fit within the threshold (unlike the default behavior where objects always go multi-line with `indent`)
 
 # install
 
