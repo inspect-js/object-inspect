@@ -27,6 +27,10 @@ var $concat = Array.prototype.concat;
 var $join = Array.prototype.join;
 var $arrSlice = Array.prototype.slice;
 var $floor = Math.floor;
+var $max = Math.max;
+var $min = Math.min;
+var $round = Math.round;
+var $sqrt = Math.sqrt;
 var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
 var gOPS = Object.getOwnPropertySymbols;
 var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
@@ -119,7 +123,7 @@ var quoteREs = {
     single: /(['\\])/g
 };
 
-module.exports = function inspect_(obj, options, depth, seen) {
+module.exports = function inspect_(obj, options, depth, seen, breakState) { // eslint-disable-line max-params
     var opts = options || {};
 
     if (has(opts, 'quoteStyle') && !has(quotes, opts.quoteStyle)) {
@@ -167,6 +171,19 @@ module.exports = function inspect_(obj, options, depth, seen) {
         throw new TypeError('option "multilineStrings", if provided, must be `true` or `false`');
     }
 
+    var hasBreakLength = has(opts, 'breakLength');
+    if (
+        hasBreakLength
+        && opts.breakLength !== Infinity
+        && (
+            typeof opts.breakLength !== 'number'
+            || opts.breakLength < 0
+            || parseInt(opts.breakLength, 10) !== opts.breakLength
+        )
+    ) {
+        throw new TypeError('option "breakLength", if provided, must be a non-negative integer or `Infinity`');
+    }
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -198,7 +215,14 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return isArray(obj) ? '[Array]' : '[Object]';
     }
 
-    var indent = getIndent(opts, depth);
+    var indent = getIndent(hasBreakLength && (typeof opts.indent === 'undefined' || opts.indent === null) ? { indent: 2 } : opts, depth);
+    var layout = hasBreakLength ? {
+        breakLength: opts.breakLength,
+        depth: depth,
+        indent: indent,
+        maxCollectionLength: maxCollectionLength,
+        state: breakState || { currentDepth: depth }
+    } : null;
 
     if (typeof seen === 'undefined') {
         seen = [];
@@ -212,7 +236,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
             nextSeen = $arrSlice.call(seen);
             nextSeen.push(from);
         }
-        if (noIndent) {
+        if (noIndent && !layout) {
             var newOpts = {
                 depth: opts.depth
             };
@@ -224,12 +248,32 @@ module.exports = function inspect_(obj, options, depth, seen) {
             }
             return inspect_(value, newOpts, depth + 1, nextSeen);
         }
-        return inspect_(value, opts, depth + 1, nextSeen);
+        return inspect_(value, opts, depth + 1, nextSeen, layout ? layout.state : breakState);
+    }
+
+    // like `util.inspect`, track the depth of the most recently entered non-empty object, so a container only fits on one line when few levels are nested below it
+    function enter() {
+        if (layout) {
+            var previousDepth = layout.state.currentDepth;
+            layout.state.currentDepth = depth;
+            return previousDepth;
+        }
+        return null;
+    }
+    function leaveIfEmpty(entries, previousDepth) {
+        if (layout && entries.length === 0) {
+            layout.state.currentDepth = previousDepth;
+        }
     }
 
     if (typeof obj === 'function' && !isRegExp(obj)) { // in older engines, regexes are callable
         var name = nameOf(obj);
+        var fnDepth = enter();
         var keys = arrObjKeys(obj, inspect);
+        leaveIfEmpty(keys, fnDepth);
+        if (layout && keys.length > 0) {
+            return breakLines(keys, bracesOf('{', '}', '[Function' + (name ? ': ' + name : ' (anonymous)') + ']', ' '), layout);
+        }
         return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']' + (keys.length > 0 ? ' { ' + $join.call(keys, ', ') + ' }' : '');
     }
     if (isSymbol(obj)) {
@@ -249,18 +293,27 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
+        enter();
         var xs = arrObjKeys(obj, inspect, maxCollectionLength);
+        if (layout) {
+            return breakLines(xs, bracesOf('[', ']', '', ' '), layout, obj);
+        }
         if (indent && !singleLineValues(xs)) {
             return '[' + indentedJoin(xs, indent) + ']';
         }
         return '[ ' + $join.call(xs, ', ') + ' ]';
     }
     if (isError(obj)) {
+        var errorDepth = enter();
         var parts = arrObjKeys(obj, inspect);
         if (!('cause' in Error.prototype) && 'cause' in obj && !isEnumerable.call(obj, 'cause')) {
-            return '{ [' + String(obj) + '] ' + $join.call($concat.call('[cause]: ' + inspect(obj.cause), parts), ', ') + ' }';
+            parts = $concat.call(['[cause]: ' + inspect(obj.cause)], parts);
         }
+        leaveIfEmpty(parts, errorDepth);
         if (parts.length === 0) { return '[' + String(obj) + ']'; }
+        if (layout) {
+            return breakLines(parts, bracesOf('{ [' + String(obj) + ']', '}', '', ' '), layout);
+        }
         return '{ [' + String(obj) + '] ' + $join.call(parts, ', ') + ' }';
     }
     if (typeof obj === 'object' && customInspect) {
@@ -272,6 +325,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isMap(obj)) {
         var mapParts = [];
+        var mapDepth = enter();
         if (mapIteratorNext && maxCollectionLength < mapSize.call(obj)) {
             var mapIterator = mapEntries.call(obj);
             var mapStep;
@@ -289,10 +343,15 @@ module.exports = function inspect_(obj, options, depth, seen) {
         if (maxCollectionLength !== Infinity && mapLength > mapParts.length) {
             mapParts.push(moreItems(mapLength - mapParts.length));
         }
+        leaveIfEmpty(mapParts, mapDepth);
+        if (layout) {
+            return breakLines(mapParts, bracesOf('Map (' + mapLength + ') {', '}', '', ''), layout);
+        }
         return collectionOf('Map', mapLength, mapParts, indent);
     }
     if (isSet(obj)) {
         var setParts = [];
+        var setDepth = enter();
         if (setIteratorNext && maxCollectionLength < setSize.call(obj)) {
             var setIterator = setValues.call(obj);
             var setStep;
@@ -309,6 +368,10 @@ module.exports = function inspect_(obj, options, depth, seen) {
         var setLength = setSize.call(obj);
         if (maxCollectionLength !== Infinity && setLength > setParts.length) {
             setParts.push(moreItems(setLength - setParts.length));
+        }
+        leaveIfEmpty(setParts, setDepth);
+        if (layout) {
+            return breakLines(setParts, bracesOf('Set (' + setLength + ') {', '}', '', ''), layout);
         }
         return collectionOf('Set', setLength, setParts, indent);
     }
@@ -345,13 +408,18 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return '{ [object globalThis] }';
     }
     if (!isDate(obj) && !isRegExp(obj)) {
+        var objectDepth = enter();
         var ys = arrObjKeys(obj, inspect, maxCollectionLength);
+        leaveIfEmpty(ys, objectDepth);
         var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
         var protoTag = (gPO ? gPO(obj) === null : !(obj instanceof Object)) ? 'null prototype' : '';
         var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? 'Object' : '';
         var constructorTag = isPlainObject || typeof obj.constructor !== 'function' ? '' : obj.constructor.name ? obj.constructor.name + ' ' : '';
         var tag = constructorTag + (stringTag || protoTag ? '[' + $join.call($concat.call([], stringTag || [], protoTag || []), ': ') + '] ' : '');
         if (ys.length === 0) { return tag + '{}'; }
+        if (layout) {
+            return breakLines(ys, bracesOf(tag + '{', '}', '', ' '), layout);
+        }
         if (indent) {
             return tag + '{' + indentedJoin(ys, indent) + '}';
         }
@@ -578,6 +646,117 @@ function weakCollectionOf(type) {
 function collectionOf(type, size, entries, indent) {
     var joinedEntries = indent ? indentedJoin(entries, indent) : $join.call(entries, ', ');
     return type + ' (' + size + ') {' + joinedEntries + '}';
+}
+
+// the following three functions port the line-breaking logic of node's `util.inspect` (with its default `compact: 3`), from `lib/internal/util/inspect.js`
+function isBelowBreakLength(entries, start, breakLength) {
+    if (breakLength === Infinity) {
+        return singleLineValues(entries);
+    }
+    var totalLength = entries.length + start;
+    if (totalLength + entries.length > breakLength) {
+        return false;
+    }
+    for (var i = 0; i < entries.length; i++) {
+        totalLength += entries[i].length;
+        if (totalLength > breakLength) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function padTo(str, width, atStart) {
+    var fill = width > str.length ? $join.call(Array(width - str.length + 1), ' ') : '';
+    return atStart ? fill + str : str + fill;
+}
+
+function groupArrayElements(entries, layout, value) {
+    var separatorSpace = 2; // a comma and a space
+    var totalLength = 0;
+    var maxLength = 0;
+    var outputLength = entries.length;
+    if (layout.maxCollectionLength < entries.length) {
+        outputLength -= 1; // leave the `... N more items` entry out of the grouping
+    }
+    var dataLen = [];
+    for (var i = 0; i < outputLength; i++) {
+        dataLen[i] = entries[i].length;
+        totalLength += dataLen[i] + separatorSpace;
+        if (maxLength < dataLen[i]) {
+            maxLength = dataLen[i];
+        }
+    }
+    var actualMax = maxLength + separatorSpace;
+    var indentationLvl = layout.indent.prev.length;
+    if ((actualMax * 3) + indentationLvl >= layout.breakLength || (totalLength / actualMax <= 5 && maxLength > 6)) {
+        return entries;
+    }
+    var averageBias = $sqrt(actualMax - (totalLength / entries.length));
+    var biasedMax = $max(actualMax - 3 - averageBias, 1);
+    var columns = $min(
+        $round($sqrt(2.5 * biasedMax * outputLength) / biasedMax),
+        $floor((layout.breakLength - indentationLvl) / actualMax),
+        12, // `compact` * 4
+        15
+    );
+    if (columns <= 1) {
+        return entries;
+    }
+    var maxLineLength = [];
+    for (var c = 0; c < columns; c++) {
+        var lineMaxLength = 0;
+        for (var j = c; j < entries.length; j += columns) {
+            if (dataLen[j] > lineMaxLength) {
+                lineMaxLength = dataLen[j];
+            }
+        }
+        maxLineLength[c] = lineMaxLength + separatorSpace;
+    }
+    var numeric = true;
+    for (var k = 0; k < entries.length && numeric; k++) {
+        numeric = typeof value[k] === 'number' || typeof value[k] === 'bigint';
+    }
+    var grouped = [];
+    for (var row = 0; row < outputLength; row += columns) {
+        var max = $min(row + columns, outputLength);
+        var str = '';
+        var col = row;
+        for (; col < max - 1; col++) {
+            str += padTo(entries[col] + ', ', maxLineLength[col - row], numeric);
+        }
+        str += numeric ? padTo(entries[col], maxLineLength[col - row] - separatorSpace, true) : entries[col];
+        grouped.push(str);
+    }
+    if (outputLength < entries.length) {
+        grouped.push(entries[outputLength]);
+    }
+    return grouped;
+}
+
+// `padding` goes inside the braces only when the entries fit on one line
+function bracesOf(opening, closing, base, padding) {
+    return [
+        opening,
+        closing,
+        base,
+        padding
+    ];
+}
+
+function breakLines(entries, braces, layout, arrayValue) {
+    var output = arrayValue && entries.length > 6 ? groupArrayElements(entries, layout, arrayValue) : entries;
+    var base = braces[2] ? braces[2] + ' ' : '';
+    if (layout.state.currentDepth - layout.depth < 3 && output.length === entries.length) {
+        var start = output.length + layout.indent.prev.length + braces[0].length + braces[2].length + 10;
+        if (isBelowBreakLength(output, start, layout.breakLength)) {
+            var joined = $join.call(output, ', ');
+            if (indexOf(joined, '\n') < 0) {
+                return base + braces[0] + braces[3] + joined + braces[3] + braces[1];
+            }
+        }
+    }
+    return base + braces[0] + indentedJoin(output, layout.indent) + braces[1];
 }
 
 function singleLineValues(xs) {
