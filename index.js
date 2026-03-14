@@ -114,12 +114,13 @@ module.exports = function inspect_(obj, options, depth, seen) {
 
     if (
         has(opts, 'maxArrayLength')
-        && (typeof opts.maxArrayLength === 'number'
-            ? opts.maxArrayLength !== Infinity
-                && (opts.maxArrayLength < 0
-                    || opts.maxArrayLength !== opts.maxArrayLength // NaN check
-                    || parseInt(opts.maxArrayLength, 10) !== opts.maxArrayLength)
-            : opts.maxArrayLength !== null
+        && opts.maxArrayLength !== null
+        && opts.maxArrayLength !== Infinity
+        && (
+            typeof opts.maxArrayLength !== 'number'
+            || opts.maxArrayLength < 0
+            || opts.maxArrayLength !== opts.maxArrayLength // NaN
+            || parseInt(opts.maxArrayLength, 10) !== opts.maxArrayLength // non-integer
         )
     ) {
         throw new TypeError('option "maxArrayLength", if provided, must be a positive integer, Infinity, or `null`');
