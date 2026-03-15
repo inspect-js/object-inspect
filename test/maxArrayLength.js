@@ -368,11 +368,98 @@ test('maxArrayLength does not affect non-array objects', function (t) {
 test('maxArrayLength with arguments object', function (t) {
     var args = (function () { return arguments; }(1, 2, 3, 4, 5));
 
-    // arguments objects are treated as objects, not arrays, so maxArrayLength doesn't apply
+    // arguments objects support maxArrayLength (like node's util.inspect)
     t.equal(
         inspect(args, { maxArrayLength: 2 }),
-        '{ 0: 1, 1: 2, 2: 3, 3: 4, 4: 5 }',
-        'maxArrayLength does not affect arguments object (treated as object)'
+        'Arguments [ 1, 2, ... 3 more items ]',
+        'arguments object truncated at maxArrayLength'
+    );
+
+    t.equal(
+        inspect(args, { maxArrayLength: 5 }),
+        'Arguments [ 1, 2, 3, 4, 5 ]',
+        'arguments object not truncated when length equals maxArrayLength'
+    );
+
+    t.equal(
+        inspect(args, { maxArrayLength: 0 }),
+        'Arguments [ ... 5 more items ]',
+        'arguments object with maxArrayLength 0'
+    );
+
+    var emptyArgs = (function () { return arguments; }());
+    t.equal(
+        inspect(emptyArgs, { maxArrayLength: 0 }),
+        'Arguments []',
+        'empty arguments object'
+    );
+
+    t.end();
+});
+
+var hasUint8Array = typeof globalThis !== 'undefined' && typeof globalThis.Uint8Array === 'function';
+var hasFloat32Array = typeof globalThis !== 'undefined' && typeof globalThis.Float32Array === 'function';
+var hasInt32Array = typeof globalThis !== 'undefined' && typeof globalThis.Int32Array === 'function';
+
+test('maxArrayLength with TypedArrays', { skip: !hasUint8Array }, function (t) {
+    var Uint8 = globalThis.Uint8Array;
+    var uint8 = new Uint8([1, 2, 3, 4, 5]);
+
+    t.equal(
+        inspect(uint8, { maxArrayLength: 3 }),
+        'Uint8Array [ 1, 2, 3, ... 2 more items ]',
+        'Uint8Array truncated at maxArrayLength'
+    );
+
+    t.equal(
+        inspect(uint8, { maxArrayLength: 5 }),
+        'Uint8Array [ 1, 2, 3, 4, 5 ]',
+        'Uint8Array not truncated when length equals maxArrayLength'
+    );
+
+    t.equal(
+        inspect(uint8, { maxArrayLength: 0 }),
+        'Uint8Array [ ... 5 more items ]',
+        'Uint8Array with maxArrayLength 0'
+    );
+
+    var emptyUint8 = new Uint8([]);
+    t.equal(
+        inspect(emptyUint8, { maxArrayLength: 0 }),
+        'Uint8Array []',
+        'empty Uint8Array'
+    );
+
+    t.end();
+});
+
+test('maxArrayLength with Float32Array', { skip: !hasFloat32Array }, function (t) {
+    var Float32 = globalThis.Float32Array;
+    var float32 = new Float32([1.5, 2.5, 3.5, 4.5, 5.5]);
+
+    t.equal(
+        inspect(float32, { maxArrayLength: 2 }),
+        'Float32Array [ 1.5, 2.5, ... 3 more items ]',
+        'Float32Array truncated at maxArrayLength'
+    );
+
+    t.equal(
+        inspect(float32, { maxArrayLength: 5 }),
+        'Float32Array [ 1.5, 2.5, 3.5, 4.5, 5.5 ]',
+        'Float32Array not truncated when length equals maxArrayLength'
+    );
+
+    t.end();
+});
+
+test('maxArrayLength with Int32Array', { skip: !hasInt32Array }, function (t) {
+    var Int32 = globalThis.Int32Array;
+    var int32 = new Int32([-1, -2, 3, 4, 5]);
+
+    t.equal(
+        inspect(int32, { maxArrayLength: 2 }),
+        'Int32Array [ -1, -2, ... 3 more items ]',
+        'Int32Array truncated at maxArrayLength'
     );
 
     t.end();
