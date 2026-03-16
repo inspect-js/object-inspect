@@ -478,24 +478,42 @@ test('finite breakLength with Map', { skip: typeof Map !== 'function' }, functio
     var map = new Map();
     map.set('x', 1);
     map.set('y', 2);
-    // single-line form: "Map (2) {'x' => 1, 'y' => 2}" = 29 chars
+    // single-line form: "Map (2) {'x' => 1, 'y' => 2}" = 28 chars
 
-    // breakLength: 0 → multi-line
     var expectedMultiLine = [
         'Map (2) {',
         "  'x' => 1,",
         "  'y' => 2",
         '}'
     ].join('\n');
+
+    // breakLength: 0 → multi-line
     t.equal(
         inspect(map, { indent: 2, breakLength: 0 }),
         expectedMultiLine,
         'breakLength: 0 with Map produces multi-line output'
     );
 
+    // breakLength: 27 → multi-line (28 > 27)
+    t.equal(
+        inspect(map, { indent: 2, breakLength: 27 }),
+        expectedMultiLine,
+        'breakLength below Map length produces multi-line output'
+    );
+
+    // breakLength: 28 → single-line (28 is not > 28)
+    t.equal(
+        inspect(map, { indent: 2, breakLength: 28 }),
+        "Map (2) {'x' => 1, 'y' => 2}",
+        'breakLength at Map length produces single-line output'
+    );
+
     // breakLength: Infinity → single-line
-    var singleLine = inspect(map, { indent: 2, breakLength: Infinity });
-    t.equal(singleLine.indexOf('\n'), -1, 'breakLength: Infinity with Map produces single-line output');
+    t.equal(
+        inspect(map, { indent: 2, breakLength: Infinity }),
+        "Map (2) {'x' => 1, 'y' => 2}",
+        'breakLength: Infinity with Map produces single-line output'
+    );
 
     t.end();
 });
@@ -505,14 +523,43 @@ test('finite breakLength with Set', { skip: typeof Set !== 'function' }, functio
     set.add(1);
     set.add(2);
     set.add(3);
+    // single-line form: "Set (3) {1, 2, 3}" = 17 chars
+
+    var expectedMultiLine = [
+        'Set (3) {',
+        '  1,',
+        '  2,',
+        '  3',
+        '}'
+    ].join('\n');
 
     // breakLength: 0 → multi-line
-    var multiLine = inspect(set, { indent: 2, breakLength: 0 });
-    t.ok(multiLine.indexOf('\n') >= 0, 'breakLength: 0 with Set produces multi-line output');
+    t.equal(
+        inspect(set, { indent: 2, breakLength: 0 }),
+        expectedMultiLine,
+        'breakLength: 0 with Set produces multi-line output'
+    );
+
+    // breakLength: 16 → multi-line (17 > 16)
+    t.equal(
+        inspect(set, { indent: 2, breakLength: 16 }),
+        expectedMultiLine,
+        'breakLength below Set length produces multi-line output'
+    );
+
+    // breakLength: 17 → single-line (17 is not > 17)
+    t.equal(
+        inspect(set, { indent: 2, breakLength: 17 }),
+        'Set (3) {1, 2, 3}',
+        'breakLength at Set length produces single-line output'
+    );
 
     // breakLength: Infinity → single-line
-    var singleLine = inspect(set, { indent: 2, breakLength: Infinity });
-    t.equal(singleLine.indexOf('\n'), -1, 'breakLength: Infinity with Set produces single-line output');
+    t.equal(
+        inspect(set, { indent: 2, breakLength: Infinity }),
+        'Set (3) {1, 2, 3}',
+        'breakLength: Infinity with Set produces single-line output'
+    );
 
     t.end();
 });
