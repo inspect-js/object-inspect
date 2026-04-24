@@ -30,7 +30,13 @@ var gOPS = Object.getOwnPropertySymbols;
 var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
 var hasShammedSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'object';
 // ie, `has-tostringtag/shams
-var toStringTag = typeof Symbol === 'function' && Symbol.toStringTag && (typeof Symbol.toStringTag === hasShammedSymbols ? 'object' : 'symbol')
+var toStringTag = typeof Symbol === 'function'
+    && Symbol.toStringTag
+    && (
+        hasShammedSymbols
+            ? typeof Symbol.toStringTag === 'object'
+            : typeof Symbol.toStringTag === 'symbol'
+    )
     ? Symbol.toStringTag
     : null;
 var isEnumerable = Object.prototype.propertyIsEnumerable;
