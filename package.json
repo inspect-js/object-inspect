@@ -5,7 +5,7 @@
   "main": "index.js",
   "sideEffects": false,
   "devDependencies": {
-    "@ljharb/eslint-config": "^22.2.0",
+    "@ljharb/eslint-config": "^22.2.3",
     "@pkgjs/support": "^0.0.6",
     "auto-changelog": "^2.5.0",
     "core-js": "^2.6.12",
