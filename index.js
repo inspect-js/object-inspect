@@ -118,6 +118,20 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     var numericSeparator = opts.numericSeparator;
 
+    var hasBreakLength = has(opts, 'breakLength');
+    if (
+        hasBreakLength
+        && opts.breakLength !== Infinity
+        && (
+            typeof opts.breakLength !== 'number'
+            || opts.breakLength < 0
+            || parseInt(opts.breakLength, 10) !== opts.breakLength
+        )
+    ) {
+        throw new TypeError('option "breakLength", if provided, must be a non-negative integer or `Infinity`');
+    }
+    var breakLength = hasBreakLength ? opts.breakLength : Infinity;
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -200,7 +214,11 @@ module.exports = function inspect_(obj, options, depth, seen) {
         if (indent && !singleLineValues(xs)) {
             return '[' + indentedJoin(xs, indent) + ']';
         }
-        return '[ ' + $join.call(xs, ', ') + ' ]';
+        var singleLine = '[ ' + $join.call(xs, ', ') + ' ]';
+        if (indent && hasBreakLength && singleLine.length > breakLength) {
+            return '[' + indentedJoin(xs, indent) + ']';
+        }
+        return singleLine;
     }
     if (isError(obj)) {
         var parts = arrObjKeys(obj, inspect);
@@ -224,7 +242,15 @@ module.exports = function inspect_(obj, options, depth, seen) {
                 mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
             });
         }
-        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
+        return collectionOf(
+            'Map',
+            mapSize.call(obj),
+            mapParts,
+            {
+                breakOpts: { has: hasBreakLength, len: breakLength },
+                indent: indent
+            }
+        );
     }
     if (isSet(obj)) {
         var setParts = [];
@@ -233,7 +259,15 @@ module.exports = function inspect_(obj, options, depth, seen) {
                 setParts.push(inspect(value, obj));
             });
         }
-        return collectionOf('Set', setSize.call(obj), setParts, indent);
+        return collectionOf(
+            'Set',
+            setSize.call(obj),
+            setParts,
+            {
+                breakOpts: { has: hasBreakLength, len: breakLength },
+                indent: indent
+            }
+        );
     }
     if (isWeakMap(obj)) {
         return weakCollectionOf('WeakMap');
@@ -275,10 +309,14 @@ module.exports = function inspect_(obj, options, depth, seen) {
         var constructorTag = isPlainObject || typeof obj.constructor !== 'function' ? '' : obj.constructor.name ? obj.constructor.name + ' ' : '';
         var tag = constructorTag + (stringTag || protoTag ? '[' + $join.call($concat.call([], stringTag || [], protoTag || []), ': ') + '] ' : '');
         if (ys.length === 0) { return tag + '{}'; }
-        if (indent) {
+        if (indent && !hasBreakLength) {
             return tag + '{' + indentedJoin(ys, indent) + '}';
         }
-        return tag + '{ ' + $join.call(ys, ', ') + ' }';
+        var objSingleLine = tag + '{ ' + $join.call(ys, ', ') + ' }';
+        if (indent && hasBreakLength && (!singleLineValues(ys) || objSingleLine.length > breakLength)) {
+            return tag + '{' + indentedJoin(ys, indent) + '}';
+        }
+        return objSingleLine;
     }
     return String(obj);
 };
@@ -474,9 +512,19 @@ function weakCollectionOf(type) {
     return type + ' { ? }';
 }
 
-function collectionOf(type, size, entries, indent) {
-    var joinedEntries = indent ? indentedJoin(entries, indent) : $join.call(entries, ', ');
-    return type + ' (' + size + ') {' + joinedEntries + '}';
+/* collectionOf formats Map/Set collections with optional breakLength support */
+function collectionOf(type, size, entries, opts) {
+    var indent = opts.indent;
+    var hasBreakLen = opts.breakOpts && opts.breakOpts.has;
+    var breakLen = opts.breakOpts && opts.breakOpts.len;
+    if (indent && !hasBreakLen) {
+        return type + ' (' + size + ') {' + indentedJoin(entries, indent) + '}';
+    }
+    var colSingleLine = type + ' (' + size + ') {' + $join.call(entries, ', ') + '}';
+    if (indent && hasBreakLen && (!singleLineValues(entries) || colSingleLine.length > breakLen)) {
+        return type + ' (' + size + ') {' + indentedJoin(entries, indent) + '}';
+    }
+    return colSingleLine;
 }
 
 function singleLineValues(xs) {

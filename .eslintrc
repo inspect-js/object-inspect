@@ -6,7 +6,7 @@
         "func-style": [2, "declaration"],
         "indent": [2, 4],
         "max-lines": 1,
-        "max-lines-per-function": 1,
+        "max-lines-per-function": 0,
         "max-params": [2, 4],
         "max-statements": 0,
         "max-statements-per-line": [2, { "max": 2 }],
