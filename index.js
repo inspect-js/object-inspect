@@ -2,10 +2,12 @@ var hasMap = typeof Map === 'function' && Map.prototype;
 var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
 var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
 var mapForEach = hasMap && Map.prototype.forEach;
+var mapEntries = hasMap && Map.prototype.entries;
 var hasSet = typeof Set === 'function' && Set.prototype;
 var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
 var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 var setForEach = hasSet && Set.prototype.forEach;
+var setValues = hasSet && Set.prototype.values;
 var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
 var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
@@ -118,6 +120,21 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     var numericSeparator = opts.numericSeparator;
 
+    if (
+        has(opts, 'maxArrayLength')
+        && opts.maxArrayLength !== null
+        && opts.maxArrayLength !== Infinity
+        && (
+            typeof opts.maxArrayLength !== 'number'
+            || opts.maxArrayLength < 0
+            || opts.maxArrayLength !== opts.maxArrayLength // NaN
+            || parseInt(opts.maxArrayLength, 10) !== opts.maxArrayLength // non-integer
+        )
+    ) {
+        throw new TypeError('option "maxArrayLength", if provided, must be a non-negative integer, Infinity, or `null`');
+    }
+    var maxArrayLength = typeof opts.maxArrayLength === 'number' ? opts.maxArrayLength : Infinity;
+
     if (typeof obj === 'undefined') {
         return 'undefined';
     }
@@ -196,11 +213,44 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
-        var xs = arrObjKeys(obj, inspect);
+        var xs = arrObjKeys(obj, inspect, maxArrayLength);
         if (indent && !singleLineValues(xs)) {
             return '[' + indentedJoin(xs, indent) + ']';
         }
         return '[ ' + $join.call(xs, ', ') + ' ]';
+    }
+    if (isTypedArray(obj)) {
+        var typedTag = $slice.call(toStr(obj), 8, -1); // e.g., 'Uint8Array'
+        if (obj.length === 0) { return typedTag + ' []'; }
+        var typedXs = [];
+        var typedLimit = maxArrayLength < obj.length ? maxArrayLength : obj.length;
+        for (var ti = 0; ti < typedLimit; ti++) {
+            typedXs.push(String(obj[ti]));
+        }
+        if (obj.length > maxArrayLength) {
+            var typedRemaining = obj.length - maxArrayLength;
+            typedXs.push('... ' + typedRemaining + ' more item' + (typedRemaining > 1 ? 's' : ''));
+        }
+        if (indent && !singleLineValues(typedXs)) {
+            return typedTag + ' [' + indentedJoin(typedXs, indent) + ']';
+        }
+        return typedTag + ' [ ' + $join.call(typedXs, ', ') + ' ]';
+    }
+    if (isArguments(obj)) {
+        if (obj.length === 0) { return 'Arguments []'; }
+        var argXs = [];
+        var argLimit = maxArrayLength < obj.length ? maxArrayLength : obj.length;
+        for (var ai = 0; ai < argLimit; ai++) {
+            argXs.push(has(obj, ai) ? inspect(obj[ai], obj) : '');
+        }
+        if (obj.length > maxArrayLength) {
+            var argRemaining = obj.length - maxArrayLength;
+            argXs.push('... ' + argRemaining + ' more item' + (argRemaining > 1 ? 's' : ''));
+        }
+        if (indent && !singleLineValues(argXs)) {
+            return 'Arguments [' + indentedJoin(argXs, indent) + ']';
+        }
+        return 'Arguments [ ' + $join.call(argXs, ', ') + ' ]';
     }
     if (isError(obj)) {
         var parts = arrObjKeys(obj, inspect);
@@ -219,21 +269,53 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isMap(obj)) {
         var mapParts = [];
-        if (mapForEach) {
+        var mapLen = mapSize.call(obj);
+        var mapCount = 0;
+        if (mapEntries) {
+            var mapIter = mapEntries.call(obj);
+            var mapEntry;
+            while (mapCount < maxArrayLength && !(mapEntry = mapIter.next()).done) {
+                mapParts.push(inspect(mapEntry.value[0], obj, true) + ' => ' + inspect(mapEntry.value[1], obj));
+                mapCount += 1;
+            }
+        } else if (mapForEach) {
             mapForEach.call(obj, function (value, key) {
-                mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                if (mapCount < maxArrayLength) {
+                    mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                }
+                mapCount += 1;
             });
         }
-        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
+        if (mapLen > maxArrayLength) {
+            var mapRemaining = mapLen - maxArrayLength;
+            mapParts.push('... ' + mapRemaining + ' more item' + (mapRemaining > 1 ? 's' : ''));
+        }
+        return collectionOf('Map', mapLen, mapParts, indent);
     }
     if (isSet(obj)) {
         var setParts = [];
-        if (setForEach) {
+        var setLen = setSize.call(obj);
+        var setCount = 0;
+        if (setValues) {
+            var setIter = setValues.call(obj);
+            var setEntry;
+            while (setCount < maxArrayLength && !(setEntry = setIter.next()).done) {
+                setParts.push(inspect(setEntry.value, obj));
+                setCount += 1;
+            }
+        } else if (setForEach) {
             setForEach.call(obj, function (value) {
-                setParts.push(inspect(value, obj));
+                if (setCount < maxArrayLength) {
+                    setParts.push(inspect(value, obj));
+                }
+                setCount += 1;
             });
         }
-        return collectionOf('Set', setSize.call(obj), setParts, indent);
+        if (setLen > maxArrayLength) {
+            var setRemaining = setLen - maxArrayLength;
+            setParts.push('... ' + setRemaining + ' more item' + (setRemaining > 1 ? 's' : ''));
+        }
+        return collectionOf('Set', setLen, setParts, indent);
     }
     if (isWeakMap(obj)) {
         return weakCollectionOf('WeakMap');
@@ -303,6 +385,21 @@ function isError(obj) { return toStr(obj) === '[object Error]' && canTrustToStri
 function isString(obj) { return toStr(obj) === '[object String]' && canTrustToString(obj); }
 function isNumber(obj) { return toStr(obj) === '[object Number]' && canTrustToString(obj); }
 function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && canTrustToString(obj); }
+function isArguments(obj) { return toStr(obj) === '[object Arguments]'; }
+function isTypedArray(obj) {
+    var tag = toStr(obj);
+    return tag === '[object Int8Array]'
+        || tag === '[object Uint8Array]'
+        || tag === '[object Uint8ClampedArray]'
+        || tag === '[object Int16Array]'
+        || tag === '[object Uint16Array]'
+        || tag === '[object Int32Array]'
+        || tag === '[object Uint32Array]'
+        || tag === '[object Float32Array]'
+        || tag === '[object Float64Array]'
+        || tag === '[object BigInt64Array]'
+        || tag === '[object BigUint64Array]';
+}
 
 // Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
 function isSymbol(obj) {
@@ -509,13 +606,18 @@ function indentedJoin(xs, indent) {
     return lineJoiner + $join.call(xs, ',' + lineJoiner) + '\n' + indent.prev;
 }
 
-function arrObjKeys(obj, inspect) {
+function arrObjKeys(obj, inspect, maxLength) {
     var isArr = isArray(obj);
     var xs = [];
     if (isArr) {
-        xs.length = obj.length;
-        for (var i = 0; i < obj.length; i++) {
+        var limit = typeof maxLength === 'number' && maxLength < obj.length ? maxLength : obj.length;
+        xs.length = limit;
+        for (var i = 0; i < limit; i++) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
+        }
+        if (typeof maxLength === 'number' && obj.length > maxLength) {
+            var remaining = obj.length - maxLength;
+            xs.push('... ' + remaining + ' more item' + (remaining > 1 ? 's' : ''));
         }
     }
     var syms = typeof gOPS === 'function' ? gOPS(obj) : [];
