@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var mockProperty = require('mock-property');
+var requireStash = require('require-stash');
 
 /*
  * Regression test for a ternary-precedence bug where the guard
@@ -23,16 +24,13 @@ C.prototype[FakeSymbol.toStringTag] = 'Oops';
 test('toStringTag precedence', function (t) {
     t.plan(1);
 
-    var inspectPath = require.resolve('../');
-    var utilInspectPath = require.resolve('../util.inspect');
-
     var restoreSymbol = mockProperty(global, 'Symbol', { value: FakeSymbol });
-    delete require.cache[inspectPath];
-    delete require.cache[utilInspectPath];
+    var restoreInspect = requireStash(__dirname, '../');
+    var restoreUtilInspect = requireStash(__dirname, '../util.inspect');
     t.teardown(function () {
         restoreSymbol();
-        delete require.cache[inspectPath];
-        delete require.cache[utilInspectPath];
+        restoreInspect();
+        restoreUtilInspect();
     });
 
     var freshInspect = require('../'); // eslint-disable-line global-require
