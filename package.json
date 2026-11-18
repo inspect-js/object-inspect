@@ -11,7 +11,7 @@
     "core-js": "^2.6.12",
     "error-cause": "^1.0.9",
     "es-value-fixtures": "^1.7.1",
-    "eslint": "^9.39.5",
+    "eslint": "^10.15.0",
     "for-each": "^0.3.5",
     "functions-have-names": "^1.2.3",
     "glob": "=10.3.7",
