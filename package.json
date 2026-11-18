@@ -21,6 +21,7 @@
     "in-publish": "^2.0.1",
     "jackspeak": "=2.1.1",
     "jiti": "^0.0.0",
+    "keyv": "^5.6.0",
     "make-arrow-function": "^1.2.0",
     "mock-property": "^1.1.2",
     "npmignore": "^0.3.6",
