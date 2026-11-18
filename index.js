@@ -260,7 +260,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return markBoxed(inspect(String(obj)));
     }
     // note: in IE 8, sometimes `global !== window` but both are the prototypes of each other
-    /* eslint-env browser */
+    /* global window */
     if (typeof window !== 'undefined' && obj === window) {
         return '{ [object Window] }';
     }

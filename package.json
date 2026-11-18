@@ -11,7 +11,7 @@
     "core-js": "^2.6.12",
     "error-cause": "^1.0.9",
     "es-value-fixtures": "^1.7.1",
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.5",
     "for-each": "^0.3.5",
     "functions-have-names": "^1.2.3",
     "glob": "=10.3.7",
@@ -19,6 +19,7 @@
     "has-symbols": "^1.1.0",
     "has-tostringtag": "^1.0.2",
     "in-publish": "^2.0.1",
+    "jiti": "^0.0.0",
     "jackspeak": "=2.1.1",
     "make-arrow-function": "^1.2.0",
     "mock-property": "^1.1.2",
@@ -36,7 +37,7 @@
     "prepublish": "not-in-publish || npm run prepublishOnly",
     "prepublishOnly": "safe-publish-latest",
     "pretest": "npm run lint",
-    "lint": "eslint --ext=js,mjs .",
+    "lint": "eslint .",
     "postlint": "npx @pkgjs/support validate",
     "test": "npm run tests-only && npm run test:corejs",
     "tests-only": "nyc tape 'test/*.js'",
@@ -96,6 +97,8 @@
   "publishConfig": {
     "ignore": [
       ".github/workflows",
+      "eslint.config.mjs",
+      "example/",
       "./test-core-js.js"
     ]
   },

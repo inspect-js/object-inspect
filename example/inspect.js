@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-env browser */
+/* global document */
 var inspect = require('../');
 
 var d = document.createElement('div');

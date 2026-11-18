@@ -6,7 +6,7 @@ var test = require('tape');
 var globalThis = require('globalthis')();
 
 test('global object', function (t) {
-    /* eslint-env browser */
+    /* global window */
     var expected = typeof window === 'undefined' ? 'globalThis' : 'Window';
     t.equal(
         inspect([globalThis]),
