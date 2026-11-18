@@ -56,6 +56,7 @@ Additional options:
   - `indent`: must be "\t", `null`, or a positive integer. Default `null`.
   - `numericSeparator`: must be a boolean, if present. Default `false`. If `true`, all numbers will be printed with numeric separators (eg, `1234.5678` will be printed as `'1_234.567_8'`)
   - `multilineStrings`: must be a boolean, if present. Default `false`. If `true`, newlines (`\n`) in strings will be printed as actual line breaks, inside the quotes, rather than as `\n`. Other control characters, including `\r`, are still escaped.
+  - `breakLength`: must be `0`, a positive integer, or `Infinity`, if present. When present, line breaks are decided the same way as node's `util.inspect` with the same `breakLength`: entries are put on one line when they fit within `breakLength` characters (counting indentation) and fewer than 3 levels of objects are nested below, and arrays with more than 6 entries are grouped into aligned columns. Uses `indent` if provided, otherwise 2 spaces. When absent, output is unchanged.
 
 # install
 
