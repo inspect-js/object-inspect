@@ -117,6 +117,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
         throw new TypeError('option "numericSeparator", if provided, must be `true` or `false`');
     }
     var numericSeparator = opts.numericSeparator;
+    if (has(opts, 'multilineStrings') && typeof opts.multilineStrings !== 'boolean') {
+        throw new TypeError('option "multilineStrings", if provided, must be `true` or `false`');
+    }
 
     if (typeof obj === 'undefined') {
         return 'undefined';
@@ -449,7 +452,7 @@ function inspectString(str, opts) {
     var quoteRE = quoteREs[opts.quoteStyle || 'single'];
     quoteRE.lastIndex = 0;
     // eslint-disable-next-line no-control-regex
-    var s = $replace.call($replace.call(str, quoteRE, '\\$1'), /[\x00-\x1f]/g, lowbyte);
+    var s = $replace.call($replace.call(str, quoteRE, '\\$1'), opts.multilineStrings ? /[\x00-\x09\x0b-\x1f]/g : /[\x00-\x1f]/g, lowbyte);
     return wrapQuotes(s, 'single', opts);
 }
 
