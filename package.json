@@ -44,6 +44,7 @@
     "tests-only": "nyc tape 'test/*.js'",
     "test:corejs": "nyc tape test-core-js.js 'test/*.js'",
     "posttest": "npx npm@'>=10.2' audit --production",
+    "generate:string-width": "node --expose-internals scripts/generate-string-width-ranges.js",
     "version": "auto-changelog && git add CHANGELOG.md",
     "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
   },
@@ -100,7 +101,8 @@
       ".github/workflows",
       "eslint.config.mjs",
       "example/",
-      "./test-core-js.js"
+      "./test-core-js.js",
+      "scripts/"
     ]
   },
   "support": true,
