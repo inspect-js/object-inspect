@@ -99,10 +99,12 @@
   "publishConfig": {
     "ignore": [
       ".github/workflows",
+      ".nycrc",
       "eslint.config.mjs",
       "example/",
-      "./test-core-js.js",
-      "scripts/"
+      "/test-core-js.js",
+      "scripts/",
+      "test/"
     ]
   },
   "support": true,
