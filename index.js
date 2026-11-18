@@ -161,9 +161,10 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
 
     function inspect(value, from, noIndent) {
+        var nextSeen = seen;
         if (from) {
-            seen = $arrSlice.call(seen);
-            seen.push(from);
+            nextSeen = $arrSlice.call(seen);
+            nextSeen.push(from);
         }
         if (noIndent) {
             var newOpts = {
@@ -172,9 +173,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
             if (has(opts, 'quoteStyle')) {
                 newOpts.quoteStyle = opts.quoteStyle;
             }
-            return inspect_(value, newOpts, depth + 1, seen);
+            return inspect_(value, newOpts, depth + 1, nextSeen);
         }
-        return inspect_(value, opts, depth + 1, seen);
+        return inspect_(value, opts, depth + 1, nextSeen);
     }
 
     if (typeof obj === 'function' && !isRegExp(obj)) { // in older engines, regexes are callable
