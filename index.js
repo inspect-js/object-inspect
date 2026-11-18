@@ -2,10 +2,12 @@ var hasMap = typeof Map === 'function' && Map.prototype;
 var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
 var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === 'function' ? mapSizeDescriptor.get : null;
 var mapForEach = hasMap && Map.prototype.forEach;
+var mapEntries = hasMap && Map.prototype.entries;
 var hasSet = typeof Set === 'function' && Set.prototype;
 var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, 'size') : null;
 var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 var setForEach = hasSet && Set.prototype.forEach;
+var setValues = hasSet && Set.prototype.values;
 var hasWeakMap = typeof WeakMap === 'function' && WeakMap.prototype;
 var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
 var hasWeakSet = typeof WeakSet === 'function' && WeakSet.prototype;
@@ -48,6 +50,37 @@ var gPO = (typeof Reflect === 'function' ? Reflect.getPrototypeOf : Object.getPr
         }
         : null
 );
+
+var mapIteratorNext = mapEntries && gPO ? gPO(mapEntries.call(new Map())).next : null;
+var setIteratorNext = setValues && gPO ? gPO(setValues.call(new Set())).next : null;
+
+// TODO: replace with `which-typed-array`, and `call-bound` for `TypedArray.prototype.length`
+/* global Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array */
+var typedArrayProto = typeof Uint8Array === 'function' && gPO ? gPO(Uint8Array.prototype) : null;
+var typedArrayTag = typedArrayProto && toStringTag ? getterOf(typedArrayProto, toStringTag) : null;
+var typedArrayLength = typedArrayProto ? getterOf(typedArrayProto, 'length') : null;
+var typedArrayToString = /^\[object (?:Int8|Uint8|Uint8Clamped|Int16|Uint16|Int32|Uint32|Float16|Float32|Float64|BigInt64|BigUint64)Array\]$/;
+var typedArrayLengths = { __proto__: null };
+if (!typedArrayLength) {
+    var TypedArrays = [
+        typeof Int8Array === 'function' && Int8Array,
+        typeof Uint8Array === 'function' && Uint8Array,
+        typeof Uint8ClampedArray === 'function' && Uint8ClampedArray,
+        typeof Int16Array === 'function' && Int16Array,
+        typeof Uint16Array === 'function' && Uint16Array,
+        typeof Int32Array === 'function' && Int32Array,
+        typeof Uint32Array === 'function' && Uint32Array,
+        typeof Float32Array === 'function' && Float32Array,
+        typeof Float64Array === 'function' && Float64Array
+    ];
+    for (var ta = 0; ta < TypedArrays.length; ta++) {
+        var TypedArray = TypedArrays[ta];
+        var lengthGetter = TypedArray && getterOf(TypedArray.prototype, 'length');
+        if (lengthGetter) {
+            typedArrayLengths[toStr(new TypedArray(0))] = lengthGetter;
+        }
+    }
+}
 
 function addNumericSeparator(num, str) {
     if (
@@ -100,6 +133,19 @@ module.exports = function inspect_(obj, options, depth, seen) {
     ) {
         throw new TypeError('option "maxStringLength", if provided, must be a non-negative integer, Infinity, or `null`');
     }
+    if (
+        has(opts, 'maxCollectionLength')
+        && opts.maxCollectionLength !== null
+        && opts.maxCollectionLength !== Infinity
+        && !(
+            typeof opts.maxCollectionLength === 'number'
+            && opts.maxCollectionLength >= 0
+            && $floor(opts.maxCollectionLength) === opts.maxCollectionLength
+        )
+    ) {
+        throw new TypeError('option "maxCollectionLength", if provided, must be a non-negative integer, Infinity, or `null`');
+    }
+    var maxCollectionLength = typeof opts.maxCollectionLength === 'number' ? opts.maxCollectionLength : Infinity;
     var customInspect = has(opts, 'customInspect') ? opts.customInspect : true;
     if (typeof customInspect !== 'boolean' && customInspect !== 'symbol') {
         throw new TypeError('option "customInspect", if provided, must be `true`, `false`, or `\'symbol\'`');
@@ -173,6 +219,9 @@ module.exports = function inspect_(obj, options, depth, seen) {
             if (has(opts, 'quoteStyle')) {
                 newOpts.quoteStyle = opts.quoteStyle;
             }
+            if (has(opts, 'maxCollectionLength')) {
+                newOpts.maxCollectionLength = opts.maxCollectionLength;
+            }
             return inspect_(value, newOpts, depth + 1, nextSeen);
         }
         return inspect_(value, opts, depth + 1, nextSeen);
@@ -200,7 +249,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isArray(obj)) {
         if (obj.length === 0) { return '[]'; }
-        var xs = arrObjKeys(obj, inspect);
+        var xs = arrObjKeys(obj, inspect, maxCollectionLength);
         if (indent && !singleLineValues(xs)) {
             return '[' + indentedJoin(xs, indent) + ']';
         }
@@ -223,21 +272,45 @@ module.exports = function inspect_(obj, options, depth, seen) {
     }
     if (isMap(obj)) {
         var mapParts = [];
-        if (mapForEach) {
+        if (mapIteratorNext && maxCollectionLength < mapSize.call(obj)) {
+            var mapIterator = mapEntries.call(obj);
+            var mapStep;
+            while (mapParts.length < maxCollectionLength && !(mapStep = mapIteratorNext.call(mapIterator)).done) {
+                mapParts.push(inspect(mapStep.value[0], obj, true) + ' => ' + inspect(mapStep.value[1], obj));
+            }
+        } else if (mapForEach) {
             mapForEach.call(obj, function (value, key) {
-                mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                if (mapParts.length < maxCollectionLength) {
+                    mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+                }
             });
         }
-        return collectionOf('Map', mapSize.call(obj), mapParts, indent);
+        var mapLength = mapSize.call(obj);
+        if (maxCollectionLength !== Infinity && mapLength > mapParts.length) {
+            mapParts.push(moreItems(mapLength - mapParts.length));
+        }
+        return collectionOf('Map', mapLength, mapParts, indent);
     }
     if (isSet(obj)) {
         var setParts = [];
-        if (setForEach) {
+        if (setIteratorNext && maxCollectionLength < setSize.call(obj)) {
+            var setIterator = setValues.call(obj);
+            var setStep;
+            while (setParts.length < maxCollectionLength && !(setStep = setIteratorNext.call(setIterator)).done) {
+                setParts.push(inspect(setStep.value, obj));
+            }
+        } else if (setForEach) {
             setForEach.call(obj, function (value) {
-                setParts.push(inspect(value, obj));
+                if (setParts.length < maxCollectionLength) {
+                    setParts.push(inspect(value, obj));
+                }
             });
         }
-        return collectionOf('Set', setSize.call(obj), setParts, indent);
+        var setLength = setSize.call(obj);
+        if (maxCollectionLength !== Infinity && setLength > setParts.length) {
+            setParts.push(moreItems(setLength - setParts.length));
+        }
+        return collectionOf('Set', setLength, setParts, indent);
     }
     if (isWeakMap(obj)) {
         return weakCollectionOf('WeakMap');
@@ -272,7 +345,7 @@ module.exports = function inspect_(obj, options, depth, seen) {
         return '{ [object globalThis] }';
     }
     if (!isDate(obj) && !isRegExp(obj)) {
-        var ys = arrObjKeys(obj, inspect);
+        var ys = arrObjKeys(obj, inspect, maxCollectionLength);
         var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
         var protoTag = (gPO ? gPO(obj) === null : !(obj instanceof Object)) ? 'null prototype' : '';
         var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? 'Object' : '';
@@ -344,6 +417,30 @@ function has(obj, key) {
 
 function toStr(obj) {
     return objectToString.call(obj);
+}
+
+function isTypedArray(obj) {
+    if (typedArrayTag) {
+        return !!typedArrayTag.call(obj);
+    }
+    return !toStringTag && $test.call(typedArrayToString, toStr(obj));
+}
+
+function getTypedArrayLength(obj) {
+    if (typedArrayLength) {
+        return typedArrayLength.call(obj);
+    }
+    var getter = typedArrayLengths[toStr(obj)];
+    return getter ? getter.call(obj) : obj.length;
+}
+
+function getterOf(obj, key) {
+    var descriptor = Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+    return descriptor && typeof descriptor.get === 'function' ? descriptor.get : null;
+}
+
+function moreItems(count) {
+    return '... ' + count + ' more item' + (count > 1 ? 's' : '');
 }
 
 function nameOf(f) {
@@ -513,14 +610,27 @@ function indentedJoin(xs, indent) {
     return lineJoiner + $join.call(xs, ',' + lineJoiner) + '\n' + indent.prev;
 }
 
-function arrObjKeys(obj, inspect) {
+function arrObjKeys(obj, inspect, maxLength) {
     var isArr = isArray(obj);
+    var limit = typeof maxLength === 'number' ? maxLength : Infinity;
+    var typedLength = !isArr && limit !== Infinity && isTypedArray(obj) ? getTypedArrayLength(obj) : null;
+    if (typeof typedLength !== 'number' || typedLength <= limit) {
+        typedLength = null;
+    }
     var xs = [];
     if (isArr) {
-        xs.length = obj.length;
-        for (var i = 0; i < obj.length; i++) {
+        xs.length = obj.length < limit ? obj.length : limit;
+        for (var i = 0; i < obj.length && i < limit; i++) {
             xs[i] = has(obj, i) ? inspect(obj[i], obj) : '';
         }
+        if (obj.length > limit) {
+            xs.push(moreItems(obj.length - limit));
+        }
+    } else if (typedLength !== null) {
+        for (var t = 0; t < limit; t++) {
+            xs.push(t + ': ' + inspect(obj[t], obj));
+        }
+        xs.push(moreItems(typedLength - limit));
     }
     var syms = typeof gOPS === 'function' ? gOPS(obj) : [];
     var symMap;
@@ -534,6 +644,7 @@ function arrObjKeys(obj, inspect) {
     for (var key in obj) { // eslint-disable-line no-restricted-syntax
         if (!has(obj, key)) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
         if (isArr && String(Number(key)) === key && key < obj.length) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
+        if (typedLength !== null && String(Number(key)) === key && key < typedLength) { continue; } // eslint-disable-line no-restricted-syntax, no-continue
         if (hasShammedSymbols && symMap['$' + key] instanceof Symbol) {
             // this is to prevent shammed Symbols, which are stored as strings, from being included in the string key section
             continue; // eslint-disable-line no-restricted-syntax, no-continue
