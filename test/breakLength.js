@@ -303,6 +303,32 @@ test('breakLength: array grouping', function (t) {
     t.end();
 });
 
+test('breakLength: array grouping uses display width', function (t) {
+    t.equal(
+        inspect([
+            '\u4e2d\u6587',
+            '\u65e5\u672c\u8a9e',
+            '\ud55c\uad6d\uc5b4',
+            'a',
+            'bb',
+            'ccc',
+            '\u00e9\u00e9',
+            'x'
+        ], { breakLength: 40 }),
+        [
+            '[',
+            "  '\u4e2d\u6587',   '\u65e5\u672c\u8a9e',",
+            "  '\ud55c\uad6d\uc5b4', 'a',",
+            "  'bb',     'ccc',",
+            "  '\u00e9\u00e9',     'x'",
+            ']'
+        ].join('\n'),
+        'full width characters take two columns'
+    );
+
+    t.end();
+});
+
 test('breakLength: BigInt array grouping', { skip: typeof BigInt !== 'function' }, function (t) {
     t.equal(
         inspect([

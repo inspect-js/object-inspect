@@ -109,6 +109,7 @@ function addNumericSeparator(num, str) {
 }
 
 var utilInspect = require('./util.inspect');
+var getStringWidth = require('./stringWidth');
 var inspectCustom = utilInspect.custom;
 var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
 
@@ -681,7 +682,7 @@ function groupArrayElements(entries, layout, value) {
     }
     var dataLen = [];
     for (var i = 0; i < outputLength; i++) {
-        dataLen[i] = entries[i].length;
+        dataLen[i] = getStringWidth(entries[i]);
         totalLength += dataLen[i] + separatorSpace;
         if (maxLength < dataLen[i]) {
             maxLength = dataLen[i];
@@ -723,9 +724,10 @@ function groupArrayElements(entries, layout, value) {
         var str = '';
         var col = row;
         for (; col < max - 1; col++) {
-            str += padTo(entries[col] + ', ', maxLineLength[col - row], numeric);
+            str += padTo(entries[col] + ', ', maxLineLength[col - row] + (entries[col].length - dataLen[col]), numeric);
         }
-        str += numeric ? padTo(entries[col], maxLineLength[col - row] - separatorSpace, true) : entries[col];
+        var lastPadding = maxLineLength[col - row] + (entries[col].length - dataLen[col]) - separatorSpace;
+        str += numeric ? padTo(entries[col], lastPadding, true) : entries[col];
         grouped.push(str);
     }
     if (outputLength < entries.length) {
